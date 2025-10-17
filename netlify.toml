@@ -1,7 +1,10 @@
 [build]
   publish = "public"
-  functions = "netlify/functions"
   command = "npx prisma generate"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
 
 # Demo page
 [[redirects]]
