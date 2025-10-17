@@ -61,7 +61,7 @@ function generateHTML(tenant) {
     }
 
     .logo-container {
-      padding: 30px 40px 20px;
+      padding: 20px 40px 10px;
       background: linear-gradient(135deg, ${tenant.colors.logoBackground} 0%, ${tenant.colors.background} 100%);
     }
 
@@ -73,14 +73,14 @@ function generateHTML(tenant) {
     }
 
     .content {
-      padding: 20px 40px 40px;
+      padding: 15px 40px 40px;
     }
 
     h1 {
       font-size: 32px;
       font-weight: 700;
       color: #212529;
-      margin-bottom: 12px;
+      margin-bottom: 6px;
     }
 
     .subtitle {
@@ -199,6 +199,11 @@ function generateHTML(tenant) {
       background: ${tenant.colors.primary}1A;
     }
 
+    .result.lead-capture {
+      border-color: ${tenant.colors.primary};
+      background: #FFFFFF;
+    }
+
     .result.error {
       border-color: #DC3545;
       background: #FFE5E8;
@@ -207,6 +212,35 @@ function generateHTML(tenant) {
     .result.not-found {
       border-color: #FF9800;
       background: #FFF3E0;
+    }
+
+    .lead-form {
+      text-align: left;
+    }
+
+    .lead-form .input-group {
+      margin-bottom: 15px;
+    }
+
+    .lead-form input[type="text"],
+    .lead-form input[type="email"],
+    .lead-form input[type="tel"] {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #E5E5E5;
+      border-radius: 4px;
+      font-size: 15px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .lead-form input:focus {
+      border-color: ${tenant.colors.primary};
+      outline: none;
+    }
+
+    .lead-form label {
+      font-size: 14px;
+      margin-bottom: 6px;
     }
 
     .result-title {
@@ -359,7 +393,7 @@ function generateHTML(tenant) {
       </div>
 
       <div class="powered-by">
-        <span>Powered by CamTagger</span>
+        <span>Powered by Camvasser</span>
         <img src="/company-cam-logo.png" alt="CompanyCam">
       </div>
     </div>
@@ -368,6 +402,9 @@ function generateHTML(tenant) {
   <script>
     const PHONE_NUMBER = '${tenant.phone}';
     const TENANT_SLUG = '${tenant.slug}';
+
+    // Store the found project temporarily
+    let foundProject = null;
 
     async function searchAddress() {
       const addressInput = document.getElementById('address');
@@ -393,7 +430,9 @@ function generateHTML(tenant) {
         document.getElementById('loader').style.display = 'none';
 
         if (data.found && data.project) {
-          showSuccess(data.project);
+          // Store project and show lead capture form first
+          foundProject = data.project;
+          showLeadCapture();
         } else {
           showNotFound();
         }
@@ -402,6 +441,82 @@ function generateHTML(tenant) {
         document.getElementById('loader').style.display = 'none';
         showError();
       }
+    }
+
+    function showLeadCapture() {
+      const result = document.getElementById('result');
+      result.className = 'result lead-capture';
+      result.style.display = 'block';
+
+      document.getElementById('resultTitle').textContent = 'Great! We found your project';
+
+      document.getElementById('resultMessage').innerHTML = \`
+        <p style="color: #6C757D; margin-bottom: 25px; line-height: 1.6;">
+          Please provide your contact information to view the photos.
+        </p>
+      \`;
+
+      document.getElementById('resultAction').innerHTML = \`
+        <form class="lead-form" onsubmit="event.preventDefault(); submitLead();">
+          <div class="input-group">
+            <label for="firstName">First Name *</label>
+            <input type="text" id="firstName" required>
+          </div>
+          <div class="input-group">
+            <label for="lastName">Last Name *</label>
+            <input type="text" id="lastName" required>
+          </div>
+          <div class="input-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="input-group">
+            <label for="phone">Phone Number *</label>
+            <input type="tel" id="phone" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+            View Project Photos
+          </button>
+        </form>
+        <div style="margin-top: 15px;"><a href="#" class="reset-link" onclick="event.preventDefault(); resetForm();">← Search Another Address</a></div>
+      \`;
+    }
+
+    async function submitLead() {
+      const leadData = {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        tenant: TENANT_SLUG,
+        projectId: foundProject.id,
+        address: foundProject.address
+      };
+
+      try {
+        // Save lead to database
+        const response = await fetch('/.netlify/functions/save-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(leadData)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          console.error('Failed to save lead:', result);
+          // Continue to gallery anyway - don't block user
+        } else {
+          console.log('Lead saved successfully:', result.leadId);
+        }
+
+      } catch (error) {
+        console.error('Error saving lead:', error);
+        // Continue to gallery anyway - don't block user
+      }
+
+      // Redirect to gallery page with real CompanyCam photos (skip lead form since already captured)
+      window.location.href = \`/.netlify/functions/gallery?tenant=\${TENANT_SLUG}&projectId=\${foundProject.id}&skipLead=true\`;
     }
 
     function showSuccess(project) {

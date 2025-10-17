@@ -1,4 +1,4 @@
-# CamTagger Multi-Tenant Configuration
+# Camvasser Multi-Tenant Configuration
 # Add new tenants here with their branding and API credentials
 
 tenants:
@@ -8,6 +8,9 @@ tenants:
 
     # Tenant identifier (used in ?tenant=budroofing)
     slug: "budroofing"
+
+    # Website domain
+    domain: "budroofing.com"
 
     # Logo URL (can be a local path like /logos/logo.png or external URL)
     logo: "https://www.budroofing.com/images/bud-vector.png"

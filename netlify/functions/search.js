@@ -202,6 +202,7 @@ export async function handler(event, context) {
         body: JSON.stringify({
           found: true,
           project: {
+            id: bestMatch.id,
             address: bestMatch.address?.street_address_1,
             city: bestMatch.address?.city,
             state: bestMatch.address?.state,

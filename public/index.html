@@ -3,21 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>View Your Project Photos - Bud Roofing</title>
-
-  <!-- Open Graph / Social Media Preview -->
-  <meta property="og:title" content="View Your Project Photos - Bud Roofing">
-  <meta property="og:description" content="Enter your address to view photos from your roofing project">
-  <meta property="og:image" content="https://budroofing.com/bud-vector.png">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="View Your Project Photos - Bud Roofing">
-  <meta name="twitter:description" content="Enter your address to view photos from your roofing project">
-  <meta name="twitter:image" content="https://budroofing.com/bud-vector.png">
+  <title>Camvasser - Turn CompanyCam into Lead Gen</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     * {
       margin: 0;
@@ -27,454 +18,362 @@
 
     body {
       font-family: 'Outfit', -apple-system, system-ui, sans-serif;
-      background: #2c2c2c;
-      color: #212529;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+      color: #ffffff;
       min-height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      flex-direction: column;
     }
 
     .container {
-      background: #FFFFFF;
-      max-width: 600px;
-      width: 100%;
-      padding: 0;
-      text-align: center;
-      overflow: hidden;
-    }
-
-    .logo-container {
-      padding: 30px 40px 20px;
-      background: linear-gradient(135deg, #2C2C2C 0%, #1a1a1a 100%);
-    }
-
-    .logo-placeholder {
-      min-height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logo-placeholder img {
-      max-width: 133px;
-      height: auto;
+      max-width: 1200px;
       margin: 0 auto;
-      display: block;
+      padding: 0 40px;
+      width: 100%;
     }
 
-    .logo-placeholder-text {
-      color: #ADB5BD;
+    /* Header */
+    header {
+      padding: 20px 0 10px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
       font-size: 16px;
       font-weight: 500;
-      border: 2px dashed #6C757D;
-      padding: 30px 40px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.05);
+      transition: color 0.3s;
     }
 
-    .content {
-      padding: 20px 40px 40px;
+    .nav-link:hover {
+      color: #FFC107;
+    }
+
+    /* Hero Section */
+    .hero {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 20px 0 80px;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
     h1 {
-      font-size: 32px;
-      font-weight: 700;
-      color: #212529;
+      font-size: 64px;
+      font-weight: 800;
+      line-height: 1.1;
       margin-bottom: 12px;
+      letter-spacing: -2px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .demo-video {
+      max-width: 700px;
+      margin: 15px auto 15px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      height: 0;
+    }
+
+    .demo-video iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
     }
 
     .subtitle {
-      color: #6C757D;
-      font-size: 18px;
-      margin-bottom: 25px;
-      line-height: 1.5;
+      font-size: 22px;
+      color: #B0B0B0;
+      margin-bottom: 30px;
+      line-height: 1.6;
+      font-weight: 400;
     }
 
-    .input-group {
-      margin-bottom: 20px;
-      text-align: left;
+    /* Features */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 60px;
     }
 
-    label {
-      display: block;
-      color: #212529;
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 10px;
+    .feature {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
     }
 
-    input[type="text"] {
-      width: 100%;
-      padding: 16px;
-      background: #FFFFFF;
-      border: 2px solid #E5E5E5;
-      border-radius: 0;
-      color: #212529;
-      font-size: 16px;
-      font-family: 'Outfit', sans-serif;
-      transition: all 0.2s;
-    }
-
-    input[type="text"]:focus {
-      outline: none;
+    .feature:hover {
+      background: rgba(255, 255, 255, 0.08);
       border-color: #FFC107;
-      background: #FFFFFF;
-      box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
+      transform: translateY(-5px);
     }
 
-    input[type="text"]::placeholder {
-      color: #ADB5BD;
+    .feature-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+    }
+
+    .feature h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+
+    .feature p {
+      color: #B0B0B0;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    /* CTA Buttons */
+    .cta-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
     .btn {
-      width: 100%;
-      padding: 18px;
-      border: none;
-      border-radius: 0;
+      padding: 18px 40px;
       font-size: 18px;
       font-weight: 600;
       font-family: 'Outfit', sans-serif;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
       cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 10px;
+      border: none;
     }
 
     .btn-primary {
-      background: #FFC107;
-      color: #212529;
-      border: none;
+      background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%);
+      color: #1a1a1a;
+      box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
     }
 
-    .btn-primary:hover:not(:disabled) {
-      background: #FFB300;
+    .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+      box-shadow: 0 15px 40px rgba(255, 193, 7, 0.4);
     }
 
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .btn-secondary {
+      background: transparent;
+      color: #ffffff;
+      border: 2px solid rgba(255, 255, 255, 0.2);
     }
 
-    .btn-success {
-      background: #FFC107;
-      color: #212529;
-      border: none;
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-
-    .btn-success:hover {
-      background: #FFB300;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
-    }
-
-    .btn-call {
-      background: #28A745;
-      color: white;
-      border: none;
-      text-decoration: none;
-      display: block;
-      font-size: 18px;
-    }
-
-    .btn-call:hover {
-      background: #218838;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-    }
-
-    .result {
-      display: none;
-      margin-top: 30px;
-      padding: 30px;
-      border-radius: 0;
-      background: #F8F9FA;
-      border: 2px solid #E5E5E5;
-    }
-
-    .result.success {
+    .btn-secondary:hover {
       border-color: #FFC107;
-      background: #FFF9E6;
+      background: rgba(255, 193, 7, 0.1);
     }
 
-    .result.error {
-      border-color: #DC3545;
-      background: #FFE5E8;
+    /* Footer */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 80px;
     }
 
-    .result.not-found {
-      border-color: #FF9800;
-      background: #FFF3E0;
-    }
-
-    .result-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 25px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #E5E5E5;
-      color: #212529;
-    }
-
-    .result-message {
-      color: #6C757D;
-      margin-bottom: 30px;
-      line-height: 1.8;
-      font-size: 17px;
-    }
-
-    .result-message strong {
-      color: #212529;
-      display: block;
-      margin-bottom: 8px;
-      font-size: 19px;
-      line-height: 1.4;
-    }
-
-    .loader {
-      display: none;
-      margin: 25px auto;
-      border: 4px solid #F8F9FA;
-      border-top: 4px solid #FFC107;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .photo-count {
-      color: #6C757D;
-      margin-top: 20px;
-      margin-bottom: 20px;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .photo-thumbnails {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin: 20px 0;
-    }
-
-    .photo-thumbnails img {
-      width: 100%;
-      height: 80px;
-      object-fit: cover;
-      border-radius: 4px;
-      border: 2px solid #E5E5E5;
-    }
-
-    .reset-link {
-      display: inline-block;
-      margin-top: 20px;
-      color: #6C757D;
-      text-decoration: none;
-      font-size: 16px;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    .reset-link:hover {
-      color: #212529;
-      text-decoration: underline;
-    }
-
-    #resultAction {
-      margin-top: 20px;
-    }
-
-    #resultAction .btn {
-      margin-top: 0;
-      margin-bottom: 15px;
-    }
-
-    #resultAction .btn:first-child {
-      margin-top: 35px;
-    }
-
-    #resultAction .btn:last-child {
-      margin-bottom: 0;
-    }
-
-
-    .powered-by {
-      margin-top: 40px;
-      margin-bottom: -40px;
-      padding-top: 25px;
-      border-top: 1px solid #E5E5E5;
-      color: #ADB5BD;
-      font-size: 13px;
+    .footer-content {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 0;
+      gap: 15px;
+      color: #6C757D;
+      font-size: 14px;
     }
 
-    .powered-by img {
-      width: 120px;
-      height: auto;
-      opacity: 1;
+    .footer-content img {
+      height: 160px;
+      width: auto;
+      opacity: 0.8;
+      filter: brightness(0) invert(1);
+      margin-left: 15px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 42px;
+      }
+
+      .subtitle {
+        font-size: 18px;
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo-container">
-      <div class="logo-placeholder">
-        <div class="logo-placeholder-text">Your Logo Here</div>
-      </div>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">Camvasser</div>
+        <a href="https://github.com/yourusername/camvasser" class="nav-link">View on GitHub →</a>
+      </nav>
     </div>
+  </header>
 
-    <div class="content">
-      <h1>View Your Photos</h1>
-      <p class="subtitle">Enter your address to view photos from your home.</p>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>
+          Set more appointments with <span class="gradient-text">Video Canvassing</span> 🚀
+        </h1>
 
-      <div id="searchForm">
-        <div class="input-group">
-          <label for="address">Street Address</label>
-          <input
-            type="text"
-            id="address"
-            placeholder="e.g., 123 Main Street"
-            autofocus
-          >
-          <div style="margin-top: 8px; font-size: 14px; color: #6C757D;">Press Enter to search</div>
+        <div class="demo-video">
+          <iframe src="https://www.youtube.com/embed/ER1PGYe9UZA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <p class="subtitle">
+          Let customers search for their project photos by address. Capture their contact info before they view.
+          Simple, branded, and built to convert.
+        </p>
+
+        <div class="cta-group" id="ctaGroup">
+          <div style="display: flex; gap: 12px; max-width: 600px; width: 100%; flex-wrap: wrap; justify-content: center;">
+            <input
+              type="text"
+              id="domainInput"
+              placeholder="Enter your website (e.g., budroofing.com)"
+              style="flex: 1; min-width: 250px; padding: 18px 24px; font-size: 16px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; border-radius: 8px; font-family: 'Outfit', sans-serif;"
+              autofocus
+            >
+            <button onclick="generatePreview()" class="btn btn-primary" style="min-width: 180px; background: linear-gradient(135deg, #28A745 0%, #218838 100%); box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);">
+              Generate Preview
+            </button>
+          </div>
+        </div>
+
+        <div class="features">
+        <div class="feature">
+          <div class="feature-icon">📸</div>
+          <h3>Prove You've Done the Work</h3>
+          <p>Show homeowners you've already evaluated their property and have a solution outlined in video. When they see you've invested time in them, they book appointments.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📞</div>
+          <h3>Capture Every Lead</h3>
+          <p>Before anyone sees photos, they give you their name, email, and phone. No more looky-loos. Only serious prospects.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <h3>Set It and Forget It</h3>
+          <p>We handle all the tech. You just upload photos to CompanyCam like you always do. Everything else is automatic.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🎨</div>
+          <h3>100% Your Brand</h3>
+          <p>Your logo, your colors, your phone number. Looks like you built it yourself, but without the headache.</p>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="loader" id="loader"></div>
-
-      <div id="result" class="result">
-        <div class="result-title" id="resultTitle"></div>
-        <div class="result-message" id="resultMessage"></div>
-        <div id="resultAction"></div>
-      </div>
-
-      <div class="powered-by">
-        <span>Powered by CamTagger</span>
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <span>Powered by</span>
         <img src="/company-cam-logo.png" alt="CompanyCam">
       </div>
     </div>
-  </div>
+  </footer>
 
   <script>
-    const PHONE_NUMBER = '855-555-1234';
-    const DEMO_MODE = true; // This is the demo/preview page
+    async function generatePreview() {
+      const domainInput = document.getElementById('domainInput');
+      let domain = domainInput.value.trim();
 
-    async function searchAddress() {
-      const addressInput = document.getElementById('address');
-      const address = addressInput.value.trim();
-
-      if (!address) {
-        alert('Please enter an address');
+      if (!domain) {
+        alert('Please enter a website domain');
         return;
       }
 
-      // Show loader, hide search form and previous results
-      document.getElementById('loader').style.display = 'block';
-      document.getElementById('result').style.display = 'none';
-      document.getElementById('searchForm').style.display = 'none';
+      // Clean up domain
+      domain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
-      // Simulate API delay for demo
-      setTimeout(() => {
-        document.getElementById('loader').style.display = 'none';
+      // Try to find logo
+      const logoUrl = await findLogo(domain);
 
-        if (DEMO_MODE) {
-          // Show demo success result
-          showDemoSuccess(address);
-        }
-      }, 1500);
+      // Store in sessionStorage and redirect to demo
+      sessionStorage.setItem('previewDomain', domain);
+      sessionStorage.setItem('previewLogo', logoUrl);
+
+      // Redirect to demo
+      window.location.href = '/demo';
     }
 
-    function showDemoSuccess(address) {
-      const result = document.getElementById('result');
-      result.className = 'result success';
-      result.style.display = 'block';
+    async function findLogo(domain) {
+      // For now, use a logo fetching service that scrapes the actual site
+      // Clearbit's logo API is free and works well
+      const clearbitLogo = `https://logo.clearbit.com/${domain}`;
 
-      document.getElementById('resultTitle').innerHTML = '✓ Demo Result';
-
-      // Show demo message with placeholder
-      document.getElementById('resultMessage').innerHTML = `
-        <div style="background: #FFF3CD; border: 2px solid #FFC107; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
-          <div style="font-weight: 700; color: #856404; margin-bottom: 10px;">📋 This is a Demo</div>
-          <div style="color: #856404; font-size: 15px; line-height: 1.6;">
-            This is a preview of how the search results will look. To connect real CompanyCam data,
-            configure your tenant in <code style="background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 3px;">tenants.yml</code>
-          </div>
-        </div>
-        <div style="font-size: 19px; font-weight: 700; color: #212529; margin-bottom: 15px; line-height: 1.4;">${address}</div>
-        <div style="font-size: 17px; color: #6C757D; margin-bottom: 30px;">Kansas City, MO</div>
-        <div class="photo-thumbnails">
-          <img src="https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?w=200&h=200&fit=crop" alt="Sample photo">
-          <img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=200&h=200&fit=crop" alt="Sample photo">
-          <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=200&h=200&fit=crop" alt="Sample photo">
-          <img src="https://images.unsplash.com/photo-1604709177225-055f99402ea3?w=200&h=200&fit=crop" alt="Sample photo">
-          <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=200&h=200&fit=crop" alt="Sample photo">
-        </div>
-        <div class="photo-count">25 Photos (Sample)</div>
-      `;
-      document.getElementById('resultAction').innerHTML = `
-        <button class="btn btn-success" onclick="alert('This is a demo. Configure your tenant to enable real CompanyCam integration.')">
-          View Project Photos (Demo)
-        </button>
-        <div><a href="#" class="reset-link" onclick="event.preventDefault(); resetForm();">← Search Another Address</a></div>
-      `;
+      // Try Clearbit first, fall back to Google favicon
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(clearbitLogo);
+        img.onerror = () => resolve(`https://www.google.com/s2/favicons?domain=${domain}&sz=256`);
+        img.src = clearbitLogo;
+      });
     }
 
-    function showNotFound() {
-      const result = document.getElementById('result');
-      result.className = 'result not-found';
-      result.style.display = 'block';
-
-      document.getElementById('resultTitle').textContent = 'Project Not Found';
-      document.getElementById('resultMessage').textContent =
-        "We couldn't find photos for this address. Give us a call and we'll help you out!";
-      document.getElementById('resultAction').innerHTML = `
-        <a href="tel:${PHONE_NUMBER}" class="btn btn-call">
-          📞 Call Us: ${PHONE_NUMBER}
-        </a>
-        <div><a href="#" class="reset-link" onclick="event.preventDefault(); resetForm();">← Try Another Address</a></div>
-      `;
-    }
-
-    function showError() {
-      const result = document.getElementById('result');
-      result.className = 'result error';
-      result.style.display = 'block';
-
-      document.getElementById('resultTitle').textContent = 'Search Error';
-      document.getElementById('resultMessage').textContent =
-        'Something went wrong. Please try again or give us a call.';
-      document.getElementById('resultAction').innerHTML = `
-        <a href="tel:${PHONE_NUMBER}" class="btn btn-call">
-          📞 Call Us: ${PHONE_NUMBER}
-        </a>
-        <div><a href="#" class="reset-link" onclick="event.preventDefault(); resetForm();">← Try Again</a></div>
-      `;
-    }
-
-    function resetForm() {
-      document.getElementById('searchForm').style.display = 'block';
-      document.getElementById('result').style.display = 'none';
-      document.getElementById('address').value = '';
-      document.getElementById('address').focus();
-    }
-
-    // Allow Enter key to submit
-    document.getElementById('address').addEventListener('keypress', function(e) {
+    // Allow Enter key
+    document.getElementById('domainInput')?.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
-        searchAddress();
+        generatePreview();
       }
     });
   </script>

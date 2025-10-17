@@ -1,6 +1,6 @@
-# CamTagger
+# Camvasser
 
-A multi-tenant landing page system that allows customers to search and view their CompanyCam project photos by address.
+Turn your CompanyCam projects into lead generation machines. A multi-tenant SaaS platform that captures leads before showing project photos.
 
 ## Features
 
@@ -87,7 +87,7 @@ No code changes or redeployment needed!
 ## Project Structure
 
 ```
-camtagger/
+camvasser/
 ├── public/
 │   ├── index.html          # Legacy single-tenant page
 │   └── logos/              # Optional local logo storage

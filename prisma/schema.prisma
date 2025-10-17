@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// End-user leads (homeowners searching for their project photos)
+model User {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String
+  phone     String
+  address   String   // The address they searched for
+  projectId String?  // CompanyCam project ID they viewed
+  tenant    String   // Which business this lead belongs to (e.g., "budroofing")
+  createdAt DateTime @default(now())
+
+  @@index([tenant])
+  @@index([createdAt])
+}
+
+// Business users (contractors signing up to use Camvasser)
+model BusinessUser {
+  id           String   @id @default(cuid())
+  name         String   // Person's name
+  email        String   @unique
+  phone        String
+  companyName  String
+  domain       String?  // Their website domain
+  slug         String?  @unique // URL slug like "budroofing"
+  status       String   @default("pending") // pending, approved, rejected
+  passwordHash String?  // Hashed password for login
+  createdAt    DateTime @default(now())
+  approvedAt   DateTime?
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([email])
+}

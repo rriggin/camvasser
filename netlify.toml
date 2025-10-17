@@ -2,6 +2,19 @@
   publish = "public"
   functions = "netlify/functions"
 
+# Demo page
+[[redirects]]
+  from = "/demo"
+  to = "/demo.html"
+  status = 200
+
+# Tenant-specific clean URLs
+[[redirects]]
+  from = "/budroofing"
+  to = "/.netlify/functions/page?tenant=budroofing"
+  status = 200
+
+# Fallback to static index
 [[redirects]]
   from = "/*"
   to = "/index.html"
