@@ -1,25 +1,28 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import yaml from 'js-yaml';
-
-// Load tenant configuration
-export function loadTenantConfig() {
-  // In production (Netlify), files are in /var/task, in dev they're in project root
-  const possiblePaths = [
-    join(process.cwd(), 'public', 'tenants.yml'),
-    join(process.cwd(), 'tenants.yml'),
-    join('/var/task', 'public', 'tenants.yml')
-  ];
-
-  for (const configPath of possiblePaths) {
-    try {
-      const configFile = readFileSync(configPath, 'utf8');
-      return yaml.load(configFile);
-    } catch (error) {
-      // Try next path
-      continue;
+// Tenant configuration - embedded directly for Netlify Functions bundling
+const TENANT_CONFIG = {
+  tenants: {
+    budroofing: {
+      name: "Bud Roofing",
+      slug: "budroofing",
+      domain: "budroofing.com",
+      logo: "https://www.budroofing.com/images/bud-vector.png",
+      phone: "855-661-7663",
+      colors: {
+        primary: "#FFC107",
+        primaryHover: "#FFB300",
+        background: "#2c2c2c",
+        logoBackground: "#2C2C2C"
+      },
+      companycam_api_token_env: "BUDROOFING_COMPANYCAM_TOKEN",
+      page_title: "View Your Project Photos - Bud Roofing",
+      page_subtitle: "Enter your address to view photos from your roofing project",
+      heading: "View Your Photos",
+      subheading: "Enter your address to view photos from your home.",
+      og_image: "https://budroofing.com/bud-vector.png"
     }
   }
+};
 
-  throw new Error('Could not find tenants.yml');
+export function loadTenantConfig() {
+  return TENANT_CONFIG;
 }
