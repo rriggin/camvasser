@@ -1,0 +1,25 @@
+{
+  "name": "camtagger",
+  "version": "1.0.0",
+  "description": "CompanyCam project photo lookup service",
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step needed'",
+    "deploy": "netlify deploy --prod"
+  },
+  "keywords": [
+    "companycam",
+    "photos",
+    "construction"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}

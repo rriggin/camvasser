@@ -1,0 +1,55 @@
+# CamTagger Multi-Tenant Configuration
+# Add new tenants here with their branding and API credentials
+
+tenants:
+  budroofing:
+    # Business name
+    name: "Bud Roofing"
+
+    # Tenant identifier (used in ?tenant=budroofing)
+    slug: "budroofing"
+
+    # Logo URL (can be a local path like /logos/logo.png or external URL)
+    logo: "https://www.budroofing.com/images/bud-vector.png"
+
+    # Contact phone number
+    phone: "855-661-7663"
+
+    # Brand colors
+    colors:
+      primary: "#FFC107"        # Yellow/gold accent color
+      primaryHover: "#FFB300"   # Hover state for primary
+      background: "#2c2c2c"     # Dark background
+      logoBackground: "#2C2C2C" # Logo container background
+
+    # CompanyCam API token (stored in environment variable)
+    # Set BUDROOFING_COMPANYCAM_TOKEN in your .env file
+    companycam_api_token_env: "BUDROOFING_COMPANYCAM_TOKEN"
+
+    # Page metadata
+    page_title: "View Your Project Photos - Bud Roofing"
+    page_subtitle: "Enter your address to view photos from your roofing project"
+    heading: "View Your Photos"
+    subheading: "Enter your address to view photos from your home."
+
+    # Social media preview (Open Graph)
+    og_image: "https://budroofing.com/bud-vector.png"
+
+# Example of adding another tenant:
+#
+#  acmeroofing:
+#    name: "ACME Roofing Co"
+#    slug: "acmeroofing"
+#    logo: "/logos/acme-logo.png"
+#    phone: "800-555-1234"
+#    colors:
+#      primary: "#0066CC"
+#      primaryHover: "#0052A3"
+#      background: "#1a1a1a"
+#      logoBackground: "#1a1a1a"
+#    companycam_api_token_env: "ACMEROOFING_COMPANYCAM_TOKEN"
+#    page_title: "View Your Project Photos - ACME Roofing"
+#    page_subtitle: "Enter your address to view photos from your roofing project"
+#    heading: "View Your Photos"
+#    subheading: "Enter your address to view photos from your project."
+#    og_image: "https://acmeroofing.com/logo.png"
