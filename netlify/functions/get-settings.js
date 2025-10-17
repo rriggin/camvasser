@@ -1,7 +1,5 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import yaml from 'js-yaml';
 import jwt from 'jsonwebtoken';
+import { loadTenantConfig } from './lib/tenant-config.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
@@ -17,13 +15,6 @@ function verifyToken(authHeader) {
   } catch (error) {
     return null;
   }
-}
-
-// Load tenant configuration
-function loadTenantConfig() {
-  const configPath = join(process.cwd(), 'tenants.yml');
-  const configFile = readFileSync(configPath, 'utf8');
-  return yaml.load(configFile);
 }
 
 export async function handler(event) {
