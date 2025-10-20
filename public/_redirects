@@ -1,3 +1,6 @@
+# Custom domain redirect - camvasser.budroofing.com goes to budroofing page
+https://camvasser.budroofing.com/* /.netlify/functions/budroofing 200!
+
 # Tenant-specific clean URLs - must come first
 /budroofing /.netlify/functions/budroofing 200!
 
