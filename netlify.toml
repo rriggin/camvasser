@@ -17,6 +17,7 @@
   from = "/budroofing"
   to = "/.netlify/functions/page?tenant=budroofing"
   status = 200
+  force = true
 
 # Fallback to static index
 [[redirects]]
