@@ -1,5 +1,5 @@
 # Tenant-specific clean URLs - must come first
-/budroofing /.netlify/functions/page?tenant=budroofing 200!
+/budroofing /.netlify/functions/budroofing 200!
 
 # Demo page
 /demo /demo.html 200

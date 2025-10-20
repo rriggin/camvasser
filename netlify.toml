@@ -8,8 +8,6 @@
 
 [[redirects]]
   from = "/budroofing"
-  to = "/.netlify/functions/page"
+  to = "/.netlify/functions/budroofing"
   status = 200
   force = true
-  [redirects.query]
-    tenant = "budroofing"
