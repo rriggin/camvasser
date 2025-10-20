@@ -1,4 +1,4 @@
-# Tenant-specific clean URLs
+# Tenant-specific clean URLs (force cache clear)
 /budroofing /.netlify/functions/page?tenant=budroofing 200!
 
 # Demo page
