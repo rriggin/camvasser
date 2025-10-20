@@ -1,0 +1,8 @@
+# Tenant-specific clean URLs
+/budroofing /.netlify/functions/page?tenant=budroofing 200!
+
+# Demo page
+/demo /demo.html 200
+
+# Fallback to static index
+/* /index.html 200
