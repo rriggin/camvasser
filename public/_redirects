@@ -1,8 +1,8 @@
-# Tenant-specific clean URLs (force cache clear)
+# Tenant-specific clean URLs - must come first
 /budroofing /.netlify/functions/page?tenant=budroofing 200!
 
 # Demo page
 /demo /demo.html 200
 
-# Fallback to static index
+# Fallback to static index (no force to allow other redirects)
 /* /index.html 200

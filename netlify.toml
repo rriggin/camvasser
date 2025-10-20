@@ -5,3 +5,11 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/budroofing"
+  to = "/.netlify/functions/page"
+  status = 200
+  force = true
+  [redirects.query]
+    tenant = "budroofing"
