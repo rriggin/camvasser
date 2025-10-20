@@ -5,22 +5,3 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
-
-# Demo page
-[[redirects]]
-  from = "/demo"
-  to = "/demo.html"
-  status = 200
-
-# Tenant-specific clean URLs
-[[redirects]]
-  from = "/budroofing"
-  to = "/.netlify/functions/page?tenant=budroofing"
-  status = 200
-  force = true
-
-# Fallback to static index
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
