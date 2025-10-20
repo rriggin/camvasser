@@ -1,15 +1,5 @@
 import axios from 'axios';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import yaml from 'js-yaml';
-
-// Load tenant configuration
-function loadTenantConfig() {
-  // Use process.cwd() which works in Netlify Functions
-  const configPath = join(process.cwd(), 'tenants.yml');
-  const configFile = readFileSync(configPath, 'utf8');
-  return yaml.load(configFile);
-}
+import { loadTenantConfig } from './lib/tenant-config.js';
 
 export async function handler(event, context) {
   // Only allow GET requests

@@ -1,6 +1,4 @@
-import yaml from 'js-yaml';
-import fs from 'fs';
-import path from 'path';
+import { loadTenantConfig } from './lib/tenant-config.js';
 
 export async function handler(event) {
   const { tenant, projectId, skipLead } = event.queryStringParameters || {};
@@ -16,8 +14,7 @@ export async function handler(event) {
 
   try {
     // Load tenant configuration
-    const configPath = path.join(process.cwd(), 'tenants.yml');
-    const config = yaml.load(fs.readFileSync(configPath, 'utf8'));
+    const config = loadTenantConfig();
     const tenantConfig = config.tenants[tenant];
 
     if (!tenantConfig) {
