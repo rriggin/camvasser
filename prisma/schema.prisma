@@ -45,3 +45,46 @@ model BusinessUser {
   @@index([status])
   @@index([email])
 }
+
+// Cached CompanyCam project data
+model Project {
+  id            String   @id  // CompanyCam project ID
+  tenant        String   // Which business (e.g., "budroofing")
+  address       String?
+  city          String?
+  state         String?
+  postalCode    String?
+  name          String?
+  status        String?  // active, deleted, etc
+  photoCount    Int      @default(0)
+  publicUrl     String?
+  coordinates   Json?    // {lat, lon}
+
+  // Sync tracking
+  lastSyncedAt  DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  // Relations
+  labels        ProjectLabel[]
+
+  @@index([tenant])
+  @@index([address])
+  @@index([lastSyncedAt])
+}
+
+// Project labels (tags/statuses from CompanyCam)
+model ProjectLabel {
+  id           String   @id @default(cuid())
+  projectId    String   // Links to Project
+  labelId      String   // CompanyCam label ID
+  displayValue String   // "Door Hanger"
+  value        String   // "door hanger"
+  tagType      String   // "project"
+
+  createdAt    DateTime @default(now())
+
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([value])
+}

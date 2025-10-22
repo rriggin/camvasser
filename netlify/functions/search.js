@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { loadTenantConfig } from './lib/tenant-config.js';
+import { syncProject } from './lib/project-sync.js';
 
 export async function handler(event, context) {
   // Only allow GET requests
@@ -160,6 +161,16 @@ export async function handler(event, context) {
     }
 
     if (bestMatch) {
+      // Sync project to database with labels
+      let syncedProject = null;
+      try {
+        syncedProject = await syncProject(bestMatch, tenant, apiToken);
+        console.log(`Synced project ${bestMatch.id} with ${syncedProject.labels?.length || 0} labels`);
+      } catch (error) {
+        console.error('Error syncing project to database:', error);
+        // Continue even if sync fails
+      }
+
       // Fetch photos for the project (up to 5)
       let photos = [];
       try {
@@ -198,7 +209,11 @@ export async function handler(event, context) {
             state: bestMatch.address?.state,
             url: bestMatch.public_url,
             photo_count: bestMatch.photo_count,
-            photos: photos
+            photos: photos,
+            labels: syncedProject?.labels?.map(l => ({
+              displayValue: l.displayValue,
+              value: l.value
+            })) || []
           }
         })
       };
