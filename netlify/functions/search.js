@@ -121,10 +121,11 @@ export async function handler(event, context) {
           return false;
         }
 
-        // Skip projects with no photos
-        if (!p.photo_count || p.photo_count === 0) {
-          return false;
-        }
+        // Note: We don't filter by photo_count because:
+        // - Projects may have videos instead of photos
+        // - Media may be in integrations (e.g., Google Drive)
+        // - photo_count may be delayed/inaccurate
+        // - Projects exist for a reason and should be findable
 
         const addr = p.address.street_address_1.toLowerCase().trim();
         const addrNumbers = addr.match(/\d+/g)?.join('') || '';
