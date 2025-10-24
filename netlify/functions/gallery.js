@@ -533,12 +533,15 @@ export async function handler(event) {
 
         // Handle videos differently from photos
         if (photo.media_type === 'video') {
-          // For scraped videos, we have thumbnail images, not actual video files
-          // Show the thumbnail with a play icon
-          const img = document.createElement('img');
-          img.src = photo.uris?.find(uri => uri.size === 768 || uri.size === 2048)?.uri || photo.uris?.[0]?.uri || '';
-          img.alt = 'Video thumbnail';
-          img.loading = 'lazy';
+          // Create video element with poster/thumbnail
+          const video = document.createElement('video');
+          video.src = photo.uris?.find(uri => uri.type === 'video/mp4' || uri.type === 'video')?.uri || photo.uris?.[0]?.uri || '';
+          video.style.width = '100%';
+          video.style.height = '300px';
+          video.style.objectFit = 'cover';
+          video.controls = false;
+          video.muted = true;
+          video.preload = 'metadata';
 
           // Add play icon overlay
           const playIcon = document.createElement('div');
@@ -552,7 +555,7 @@ export async function handler(event) {
           playIcon.innerHTML = '▶';
 
           photoItem.style.position = 'relative';
-          photoItem.appendChild(img);
+          photoItem.appendChild(video);
           photoItem.appendChild(playIcon);
         } else {
           const img = document.createElement('img');
@@ -590,21 +593,24 @@ export async function handler(event) {
       const lightbox = document.getElementById('lightbox');
       const lightboxImg = document.getElementById('lightboxImage');
 
-      // Handle videos in lightbox (for scraped videos, just show the image since we don't have video files)
+      // Handle videos in lightbox
       if (photo.media_type === 'video') {
-        // For scraped content, we only have thumbnails, not actual video files
-        // Just show the high-res image
+        // Replace img with video element for playback
         const currentElement = document.getElementById('lightboxImage');
-        if (currentElement.tagName === 'VIDEO') {
-          const img = document.createElement('img');
-          img.id = 'lightboxImage';
-          img.src = '';
-          img.alt = '';
-          currentElement.replaceWith(img);
+        if (currentElement.tagName !== 'VIDEO') {
+          const video = document.createElement('video');
+          video.id = 'lightboxImage';
+          video.src = '';
+          currentElement.replaceWith(video);
         }
 
-        const lightboxImage = document.getElementById('lightboxImage');
-        lightboxImage.src = photo.uris?.find(uri => uri.size === 2048)?.uri || photo.uris?.[photo.uris.length - 1]?.uri || '';
+        const video = document.getElementById('lightboxImage');
+        video.src = photo.uris?.find(uri => uri.type === 'video/mp4' || uri.type === 'video')?.uri || photo.uris?.[0]?.uri || '';
+        video.controls = true;
+        video.autoplay = true;
+        video.style.maxWidth = '90%';
+        video.style.maxHeight = '90%';
+        video.style.objectFit = 'contain';
       } else {
         // If current element is video, replace with img
         const currentElement = document.getElementById('lightboxImage');
