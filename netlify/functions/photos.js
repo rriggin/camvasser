@@ -1,4 +1,5 @@
 import { loadTenantConfig } from './lib/tenant-config.js';
+import { scrapeTimelineMedia } from './lib/scrape-timeline.js';
 
 export async function handler(event) {
   const { tenant, projectId } = event.queryStringParameters || {};
@@ -121,6 +122,14 @@ export async function handler(event) {
       }
     } catch (error) {
       console.log(`No documents endpoint or error fetching documents: ${error.message}`);
+    }
+
+    // If no media found via API, try scraping the public timeline
+    if (allMedia.length === 0 && project.public_url) {
+      console.log(`No media found via API for project ${projectId}, attempting to scrape timeline...`);
+      const scrapedMedia = await scrapeTimelineMedia(project.public_url);
+      allMedia = scrapedMedia;
+      console.log(`Scraped ${allMedia.length} media items from timeline`);
     }
 
     // Sort all media by date (newest first)
