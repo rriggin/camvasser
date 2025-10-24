@@ -17,50 +17,59 @@ export async function scrapeTimelineMedia(publicUrl) {
     const html = response.data;
     const media = [];
 
-    // 1. Extract Mux video URLs (actual video files)
-    const muxRegex = /https:\/\/stream\.mux\.com\/[^\s"'<>]+/g;
-    const muxUrls = html.match(muxRegex);
+    // Extract photo-grid items - these are the actual project media
+    // Look for <a class="photo-item"> and <a class="photo-item video-item">
+    const photoItemRegex = /<a[^>]*class="photo-item[^"]*"[^>]*>/g;
+    const photoItems = [...html.matchAll(photoItemRegex)];
 
-    if (muxUrls) {
-      const uniqueMuxUrls = [...new Set(muxUrls)];
-      console.log(`Found ${uniqueMuxUrls.length} Mux video URLs`);
+    console.log(`Found ${photoItems.length} photo-item elements in photo-grid`);
 
-      uniqueMuxUrls.forEach((url, index) => {
+    photoItems.forEach((match, index) => {
+      const itemHtml = match[0];
+
+      // Check if it's a video (has data-mp4-url)
+      const mp4UrlMatch = itemHtml.match(/data-mp4-url="([^"]+)"/);
+
+      if (mp4UrlMatch) {
+        // It's a video
+        const videoUrl = mp4UrlMatch[1];
+        const thumbnailMatch = itemHtml.match(/data-background-image-url="([^"]+)"/);
+        const thumbnail = thumbnailMatch ? thumbnailMatch[1] : null;
+
         media.push({
           id: `video-${index}`,
           media_type: 'video',
           uris: [
             {
-              uri: url,
+              uri: videoUrl,
               type: 'video/mp4'
             }
           ],
+          thumbnail: thumbnail,
           captured_at: new Date().toISOString(),
           source: 'scraped'
         });
-      });
-    }
+      } else {
+        // It's a photo
+        const hrefMatch = itemHtml.match(/href="([^"]+)"/);
+        const thumbnailMatch = itemHtml.match(/data-thumb="([^"]+)"/);
 
-    // 2. Extract img.companycam.com URLs (photos)
-    const imgRegex = /https:\/\/img\.companycam\.com\/[^\s"'<>]+/g;
-    const imgUrls = html.match(imgRegex);
+        if (hrefMatch) {
+          const photoUrl = hrefMatch[1];
+          const thumbnail = thumbnailMatch ? thumbnailMatch[1] : photoUrl;
 
-    if (imgUrls) {
-      const uniqueImgUrls = [...new Set(imgUrls)];
-      console.log(`Found ${uniqueImgUrls.length} image URLs`);
-
-      uniqueImgUrls.forEach((url, index) => {
-        // Skip images that look like video thumbnails if we already have the video
-        const isProbablyVideoThumbnail = url.includes('pending.s3') || url.includes('companycam-pending');
-
-        if (!isProbablyVideoThumbnail || muxUrls.length === 0) {
           media.push({
             id: `photo-${index}`,
             media_type: 'photo',
             uris: [
               {
-                uri: url,
+                uri: photoUrl,
                 size: 2048,
+                type: 'image'
+              },
+              {
+                uri: thumbnail,
+                size: 400,
                 type: 'image'
               }
             ],
@@ -68,15 +77,18 @@ export async function scrapeTimelineMedia(publicUrl) {
             source: 'scraped'
           });
         }
-      });
-    }
+      }
+    });
 
     if (media.length === 0) {
-      console.log('No media URLs found in timeline HTML');
+      console.log('No media items found in photo-grid');
       return [];
     }
 
-    console.log(`Scraped ${media.length} media items from timeline (${muxUrls?.length || 0} videos, ${media.length - (muxUrls?.length || 0)} photos)`);
+    const videoCount = media.filter(m => m.media_type === 'video').length;
+    const photoCount = media.filter(m => m.media_type === 'photo').length;
+
+    console.log(`Scraped ${media.length} media items from timeline (${videoCount} videos, ${photoCount} photos)`);
     return media;
 
   } catch (error) {
