@@ -478,8 +478,11 @@ export async function handler(event) {
 
     async function loadPhotos() {
       try {
+        console.log('Loading photos for tenant:', tenant, 'projectId:', projectId);
         const response = await fetch(\`/.netlify/functions/photos?tenant=\${tenant}&projectId=\${projectId}\`);
         const data = await response.json();
+
+        console.log('Photos response:', response.ok, 'data:', data);
 
         if (!response.ok) {
           throw new Error(data.error || 'Failed to load photos');
@@ -488,19 +491,24 @@ export async function handler(event) {
         photos = data.photos;
         const project = data.project;
 
+        console.log('Loaded photos:', photos.length, photos);
+
         // Update project info
         document.getElementById('projectName').textContent = project.name || project.address?.street_address_1 || 'Your Project';
         document.getElementById('projectAddress').textContent = formatAddress(project.address);
-        document.getElementById('photoCount').textContent = \`\${photos.length} Photo\${photos.length !== 1 ? 's' : ''}\`;
+        document.getElementById('photoCount').textContent = \`\${photos.length} Item\${photos.length !== 1 ? 's' : ''}\`;
 
         // Render photos
+        console.log('About to render photos...');
         renderPhotos();
+        console.log('Photos rendered');
 
       } catch (error) {
         console.error('Error loading photos:', error);
         document.getElementById('photoGrid').innerHTML = \`
           <div style="text-align: center; padding: 40px; color: #DC3545;">
             <p>Failed to load photos. Please try again later.</p>
+            <p style="font-size: 14px; margin-top: 10px;">Error: \${error.message}</p>
           </div>
         \`;
       }
@@ -518,15 +526,25 @@ export async function handler(event) {
     }
 
     function renderPhotos() {
+      console.log('renderPhotos called with', photos.length, 'items');
       const grid = document.getElementById('photoGrid');
+
+      if (!grid) {
+        console.error('photoGrid element not found!');
+        return;
+      }
+
       grid.innerHTML = '';
 
       if (photos.length === 0) {
+        console.log('No photos to render');
         grid.innerHTML = '<div style="text-align: center; padding: 40px; color: #6C757D;">No media found for this project.</div>';
         return;
       }
 
+      console.log('Rendering', photos.length, 'photos...');
       photos.forEach((photo, index) => {
+        console.log('Rendering photo', index, photo.media_type);
         const photoItem = document.createElement('div');
         photoItem.className = 'photo-item';
         photoItem.onclick = () => openLightbox(index);
