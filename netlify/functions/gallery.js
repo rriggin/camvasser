@@ -521,25 +521,57 @@ export async function handler(event) {
       const grid = document.getElementById('photoGrid');
       grid.innerHTML = '';
 
+      if (photos.length === 0) {
+        grid.innerHTML = '<div style="text-align: center; padding: 40px; color: #6C757D;">No media found for this project.</div>';
+        return;
+      }
+
       photos.forEach((photo, index) => {
         const photoItem = document.createElement('div');
         photoItem.className = 'photo-item';
         photoItem.onclick = () => openLightbox(index);
 
-        const img = document.createElement('img');
-        img.src = photo.uris?.find(uri => uri.size === 768)?.uri || photo.uris?.[0]?.uri || '';
-        img.alt = 'Project photo';
-        img.loading = 'lazy';
+        // Handle videos differently from photos
+        if (photo.media_type === 'video') {
+          const video = document.createElement('video');
+          video.src = photo.uris?.find(uri => uri.type === 'mp4')?.uri || photo.uris?.[0]?.uri || '';
+          video.style.width = '100%';
+          video.style.height = '300px';
+          video.style.objectFit = 'cover';
+          video.controls = false;
+          video.muted = true;
+          video.loading = 'lazy';
+
+          // Add play icon overlay
+          const playIcon = document.createElement('div');
+          playIcon.style.position = 'absolute';
+          playIcon.style.top = '50%';
+          playIcon.style.left = '50%';
+          playIcon.style.transform = 'translate(-50%, -50%)';
+          playIcon.style.fontSize = '64px';
+          playIcon.style.color = 'white';
+          playIcon.style.textShadow = '0 2px 10px rgba(0,0,0,0.5)';
+          playIcon.innerHTML = '▶';
+
+          photoItem.style.position = 'relative';
+          photoItem.appendChild(video);
+          photoItem.appendChild(playIcon);
+        } else {
+          const img = document.createElement('img');
+          img.src = photo.uris?.find(uri => uri.size === 768)?.uri || photo.uris?.[0]?.uri || '';
+          img.alt = 'Project photo';
+          img.loading = 'lazy';
+          photoItem.appendChild(img);
+        }
 
         const photoInfo = document.createElement('div');
         photoInfo.className = 'photo-info';
 
         const photoDate = document.createElement('div');
         photoDate.className = 'photo-date';
-        photoDate.textContent = formatDate(photo.captured_at);
+        photoDate.textContent = formatDate(photo.captured_at || photo.created_at);
 
         photoInfo.appendChild(photoDate);
-        photoItem.appendChild(img);
         photoItem.appendChild(photoInfo);
         grid.appendChild(photoItem);
       });
@@ -557,9 +589,38 @@ export async function handler(event) {
     function openLightbox(index) {
       currentPhotoIndex = index;
       const photo = photos[index];
+      const lightbox = document.getElementById('lightbox');
       const lightboxImg = document.getElementById('lightboxImage');
-      lightboxImg.src = photo.uris?.find(uri => uri.size === 2048)?.uri || photo.uris?.[photo.uris.length - 1]?.uri || '';
-      document.getElementById('lightbox').classList.add('active');
+
+      // Handle videos in lightbox
+      if (photo.media_type === 'video') {
+        // Replace img with video element
+        const video = document.createElement('video');
+        video.id = 'lightboxImage';
+        video.src = photo.uris?.find(uri => uri.type === 'mp4')?.uri || photo.uris?.[0]?.uri || '';
+        video.controls = true;
+        video.autoplay = true;
+        video.style.maxWidth = '90%';
+        video.style.maxHeight = '90%';
+        video.style.objectFit = 'contain';
+
+        lightboxImg.replaceWith(video);
+      } else {
+        // If current element is video, replace with img
+        const currentElement = document.getElementById('lightboxImage');
+        if (currentElement.tagName === 'VIDEO') {
+          const img = document.createElement('img');
+          img.id = 'lightboxImage';
+          img.src = '';
+          img.alt = '';
+          currentElement.replaceWith(img);
+        }
+
+        const lightboxImage = document.getElementById('lightboxImage');
+        lightboxImage.src = photo.uris?.find(uri => uri.size === 2048)?.uri || photo.uris?.[photo.uris.length - 1]?.uri || '';
+      }
+
+      lightbox.classList.add('active');
     }
 
     function closeLightbox() {

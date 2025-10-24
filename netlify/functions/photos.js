@@ -48,11 +48,12 @@ export async function handler(event) {
 
     const project = await projectResponse.json();
 
-    // Fetch all photos for the project
-    let allPhotos = [];
+    // Fetch all media (photos, videos, documents) for the project
+    let allMedia = [];
+
+    // Fetch photos
     let page = 1;
     let hasMore = true;
-
     while (hasMore) {
       const photosResponse = await fetch(
         `https://api.companycam.com/v2/projects/${projectId}/photos?per_page=100&page=${page}`,
@@ -64,18 +65,70 @@ export async function handler(event) {
         }
       );
 
-      if (!photosResponse.ok) break;
-
-      const photosData = await photosResponse.json();
-      allPhotos = allPhotos.concat(photosData);
-
-      // Check if there are more pages
-      hasMore = photosData.length === 100;
-      page++;
+      if (photosResponse.ok) {
+        const photosData = await photosResponse.json();
+        // Tag each item with media type
+        const photos = photosData.map(p => ({ ...p, media_type: 'photo' }));
+        allMedia = allMedia.concat(photos);
+        hasMore = photosData.length === 100;
+        page++;
+      } else {
+        hasMore = false;
+      }
     }
 
-    // Sort photos by date (newest first)
-    allPhotos.sort((a, b) => new Date(b.captured_at) - new Date(a.captured_at));
+    // Fetch videos (if endpoint exists)
+    try {
+      const videosResponse = await fetch(
+        `https://api.companycam.com/v2/projects/${projectId}/videos`,
+        {
+          headers: {
+            'Authorization': `Bearer ${apiToken}`,
+            'Accept': 'application/json'
+          }
+        }
+      );
+
+      if (videosResponse.ok) {
+        const videosData = await videosResponse.json();
+        // Tag each item with media type and add to media array
+        const videos = videosData.map(v => ({ ...v, media_type: 'video' }));
+        allMedia = allMedia.concat(videos);
+        console.log(`Found ${videos.length} videos for project ${projectId}`);
+      }
+    } catch (error) {
+      console.log(`No videos endpoint or error fetching videos: ${error.message}`);
+    }
+
+    // Fetch documents (if endpoint exists)
+    try {
+      const docsResponse = await fetch(
+        `https://api.companycam.com/v2/projects/${projectId}/documents`,
+        {
+          headers: {
+            'Authorization': `Bearer ${apiToken}`,
+            'Accept': 'application/json'
+          }
+        }
+      );
+
+      if (docsResponse.ok) {
+        const docsData = await docsResponse.json();
+        // Tag each item with media type and add to media array
+        const docs = docsData.map(d => ({ ...d, media_type: 'document' }));
+        allMedia = allMedia.concat(docs);
+        console.log(`Found ${docs.length} documents for project ${projectId}`);
+      }
+    } catch (error) {
+      console.log(`No documents endpoint or error fetching documents: ${error.message}`);
+    }
+
+    // Sort all media by date (newest first)
+    allMedia.sort((a, b) => {
+      const dateA = new Date(a.captured_at || a.created_at || 0);
+      const dateB = new Date(b.captured_at || b.created_at || 0);
+      return dateB - dateA;
+    });
 
     return {
       statusCode: 200,
@@ -85,7 +138,7 @@ export async function handler(event) {
       },
       body: JSON.stringify({
         project,
-        photos: allPhotos,
+        photos: allMedia, // Return all media types (photos, videos, documents)
         tenant: tenantConfig
       })
     };
