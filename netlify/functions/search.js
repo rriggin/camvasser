@@ -116,6 +116,11 @@ export async function handler(event, context) {
 
       // Search this page for a match
       bestMatch = projects.find(p => {
+        // Skip deleted projects
+        if (p.status === 'deleted') {
+          return false;
+        }
+
         // Skip projects with no address
         if (!p.address || !p.address.street_address_1) {
           return false;

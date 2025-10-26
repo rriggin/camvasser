@@ -49,6 +49,14 @@ export async function handler(event) {
 
     const project = await projectResponse.json();
 
+    // Check if project is deleted
+    if (project.status === 'deleted') {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: 'Project is deleted' })
+      };
+    }
+
     // Fetch all media (photos, videos, documents) for the project
     let allMedia = [];
 
