@@ -249,12 +249,32 @@ export async function handler(event) {
 
       console.log('Lead captured:', leadData);
 
-      // TODO: Send to backend/CRM
-      // For now, just show success message
+      try {
+        // Save lead to database
+        const response = await fetch('/.netlify/functions/save-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(leadData)
+        });
 
-      // Hide form, show success
-      document.getElementById('leadForm').style.display = 'none';
-      document.getElementById('successMessage').classList.add('visible');
+        const result = await response.json();
+
+        if (!response.ok) {
+          console.error('Failed to save lead:', result);
+          alert('There was an error submitting your information. Please try again.');
+          return;
+        }
+
+        console.log('Lead saved successfully:', result.leadId);
+
+        // Hide form, show success
+        document.getElementById('leadForm').style.display = 'none';
+        document.getElementById('successMessage').classList.add('visible');
+
+      } catch (error) {
+        console.error('Error saving lead:', error);
+        alert('There was an error submitting your information. Please try again.');
+      }
     });
   </script>
 </body>
