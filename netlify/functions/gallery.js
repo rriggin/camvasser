@@ -372,7 +372,7 @@ export async function handler(event) {
       padding: 25px 20px;
       border-radius: 8px;
       text-align: center;
-      margin-bottom: 20px;
+      margin-top: 20px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
@@ -461,14 +461,14 @@ export async function handler(event) {
         <div class="photo-count" id="photoCount"></div>
       </div>
 
+      <div class="photo-grid" id="photoGrid">
+        <div class="loader"></div>
+      </div>
+
       <div class="contact-cta">
         <h3>Ready to get started?</h3>
         <p>Call us at <a href="tel:${tenantConfig.phone}" style="color: #28A745; text-decoration: none; font-weight: 600;">${tenantConfig.phone}</a> or click below.</p>
         <a href="/.netlify/functions/lead-form?tenant=${tenant}&projectId=${projectId}" class="btn">Schedule an Appointment</a>
-      </div>
-
-      <div class="photo-grid" id="photoGrid">
-        <div class="loader"></div>
       </div>
     </div>
   </div>
