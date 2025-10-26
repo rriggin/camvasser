@@ -434,42 +434,8 @@ function generateHTML(tenant) {
     }
 
     function showLeadCapture() {
-      const result = document.getElementById('result');
-      result.className = 'result lead-capture';
-      result.style.display = 'block';
-
-      document.getElementById('resultTitle').textContent = 'Great! We found your project';
-
-      document.getElementById('resultMessage').innerHTML = \`
-        <p style="color: #6C757D; margin-bottom: 25px; line-height: 1.6;">
-          Please provide your contact information to view the photos.
-        </p>
-      \`;
-
-      document.getElementById('resultAction').innerHTML = \`
-        <form class="lead-form" onsubmit="event.preventDefault(); submitLead();">
-          <div class="input-group">
-            <label for="firstName">First Name *</label>
-            <input type="text" id="firstName" required>
-          </div>
-          <div class="input-group">
-            <label for="lastName">Last Name *</label>
-            <input type="text" id="lastName" required>
-          </div>
-          <div class="input-group">
-            <label for="email">Email *</label>
-            <input type="email" id="email" required>
-          </div>
-          <div class="input-group">
-            <label for="phone">Phone Number *</label>
-            <input type="tel" id="phone" required>
-          </div>
-          <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
-            View Project Photos
-          </button>
-        </form>
-        <div style="margin-top: 15px;"><a href="#" class="reset-link" onclick="event.preventDefault(); resetForm();">← Search Another Address</a></div>
-      \`;
+      // Redirect directly to gallery instead of showing lead form
+      window.location.href = \`/.netlify/functions/gallery?tenant=\${TENANT_SLUG}&projectId=\${foundProject.id}\`;
     }
 
     async function submitLead() {
