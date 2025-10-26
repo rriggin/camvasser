@@ -51,15 +51,15 @@ export async function handler(event) {
 
     .header {
       background: linear-gradient(135deg, #2C2C2C 0%, #1a1a1a 100%);
-      padding: 15px 20px;
+      padding: 10px 20px;
       text-align: center;
       color: white;
     }
 
     .logo {
-      max-width: 134px;
+      max-width: 100px;
       height: auto;
-      margin: 0 auto 10px;
+      margin: 0 auto 5px;
       display: block;
     }
 
@@ -211,7 +211,7 @@ export async function handler(event) {
 
     .photo-item img {
       width: 100%;
-      height: 500px;
+      height: 400px;
       object-fit: contain;
       background: #000;
       display: block;
@@ -255,7 +255,7 @@ export async function handler(event) {
 
     @media (max-width: 768px) {
       .photo-item img {
-        height: 400px;
+        height: 350px;
       }
 
       .carousel-nav {
@@ -584,7 +584,7 @@ export async function handler(event) {
           const video = document.createElement('video');
           video.src = photo.uris?.find(uri => uri.type === 'video/mp4' || uri.type === 'video')?.uri || photo.uris?.[0]?.uri || '';
           video.style.width = '100%';
-          video.style.height = '500px';
+          video.style.height = '400px';
           video.style.objectFit = 'contain';
           video.style.background = '#000';
           video.controls = false;
