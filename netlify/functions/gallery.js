@@ -57,7 +57,7 @@ export async function handler(event) {
     }
 
     .logo {
-      max-width: 200px;
+      max-width: 134px;
       height: auto;
       margin: 0 auto 20px;
       display: block;
@@ -187,31 +187,90 @@ export async function handler(event) {
     }
 
     .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
+      position: relative;
+      width: 100%;
+      overflow: hidden;
       margin-bottom: 40px;
     }
 
+    .carousel-container {
+      display: flex;
+      transition: transform 0.3s ease-out;
+      gap: 20px;
+    }
+
     .photo-item {
+      flex: 0 0 100%;
+      max-width: 100%;
       background: white;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      transition: transform 0.3s, box-shadow 0.3s;
       cursor: pointer;
-    }
-
-    .photo-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
 
     .photo-item img {
       width: 100%;
-      height: 300px;
-      object-fit: cover;
+      height: 500px;
+      object-fit: contain;
+      background: #000;
       display: block;
+    }
+
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.3s;
+    }
+
+    .carousel-nav:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .carousel-nav.prev {
+      left: 20px;
+    }
+
+    .carousel-nav.next {
+      right: 20px;
+    }
+
+    .carousel-indicators {
+      text-align: center;
+      padding: 20px 0;
+      color: #6C757D;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .photo-item img {
+        height: 400px;
+      }
+
+      .carousel-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+
+      .carousel-nav.prev {
+        left: 10px;
+      }
+
+      .carousel-nav.next {
+        right: 10px;
+      }
     }
 
     .photo-info {
@@ -343,10 +402,6 @@ export async function handler(event) {
     }
 
     @media (max-width: 768px) {
-      .photo-grid {
-        grid-template-columns: 1fr;
-      }
-
       .lightbox-nav {
         font-size: 32px;
         padding: 15px 20px;
@@ -411,9 +466,9 @@ export async function handler(event) {
       </div>
 
       <div class="contact-cta">
-        <h3>Love What You See?</h3>
-        <p>Ready to start your own project? Get in touch with us today!</p>
-        <a href="/.netlify/functions/lead-form?tenant=${tenant}&projectId=${projectId}" class="btn">Contact Us</a>
+        <h3>Ready to get started?</h3>
+        <p>Call us at <a href="tel:${tenantConfig.phone}" style="color: #28A745; text-decoration: none; font-weight: 600;">${tenantConfig.phone}</a> or click below.</p>
+        <a href="/.netlify/functions/lead-form?tenant=${tenant}&projectId=${projectId}" class="btn">Schedule an Appointment</a>
       </div>
     </div>
   </div>
@@ -503,7 +558,20 @@ export async function handler(event) {
         return;
       }
 
+      // Sort media: videos first, then photos
+      photos = [...photos].sort((a, b) => {
+        if (a.media_type === 'video' && b.media_type !== 'video') return -1;
+        if (a.media_type !== 'video' && b.media_type === 'video') return 1;
+        return 0;
+      });
+
       console.log('Rendering', photos.length, 'photos...');
+
+      // Create carousel container
+      const carousel = document.createElement('div');
+      carousel.className = 'carousel-container';
+      carousel.id = 'carouselContainer';
+
       photos.forEach((photo, index) => {
         console.log('Rendering photo', index, photo.media_type);
         const photoItem = document.createElement('div');
@@ -516,8 +584,9 @@ export async function handler(event) {
           const video = document.createElement('video');
           video.src = photo.uris?.find(uri => uri.type === 'video/mp4' || uri.type === 'video')?.uri || photo.uris?.[0]?.uri || '';
           video.style.width = '100%';
-          video.style.height = '300px';
-          video.style.objectFit = 'cover';
+          video.style.height = '500px';
+          video.style.objectFit = 'contain';
+          video.style.background = '#000';
           video.controls = false;
           video.muted = true;
           video.preload = 'metadata';
@@ -544,17 +613,89 @@ export async function handler(event) {
           photoItem.appendChild(img);
         }
 
-        const photoInfo = document.createElement('div');
-        photoInfo.className = 'photo-info';
-
-        const photoDate = document.createElement('div');
-        photoDate.className = 'photo-date';
-        photoDate.textContent = formatDate(photo.captured_at || photo.created_at);
-
-        photoInfo.appendChild(photoDate);
-        photoItem.appendChild(photoInfo);
-        grid.appendChild(photoItem);
+        carousel.appendChild(photoItem);
       });
+
+      grid.appendChild(carousel);
+
+      // Add navigation buttons
+      if (photos.length > 1) {
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'carousel-nav prev';
+        prevBtn.innerHTML = '‹';
+        prevBtn.onclick = () => navigateCarousel(-1);
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'carousel-nav next';
+        nextBtn.innerHTML = '›';
+        nextBtn.onclick = () => navigateCarousel(1);
+
+        grid.appendChild(prevBtn);
+        grid.appendChild(nextBtn);
+      }
+
+      // Add indicators
+      const indicators = document.createElement('div');
+      indicators.className = 'carousel-indicators';
+      indicators.id = 'carouselIndicators';
+      indicators.textContent = \`1 / \${photos.length}\`;
+      grid.appendChild(indicators);
+
+      // Initialize carousel
+      currentPhotoIndex = 0;
+      updateCarousel();
+    }
+
+    function navigateCarousel(direction) {
+      currentPhotoIndex += direction;
+      if (currentPhotoIndex < 0) currentPhotoIndex = photos.length - 1;
+      if (currentPhotoIndex >= photos.length) currentPhotoIndex = 0;
+      updateCarousel();
+    }
+
+    function updateCarousel() {
+      const carousel = document.getElementById('carouselContainer');
+      const indicators = document.getElementById('carouselIndicators');
+      if (carousel) {
+        carousel.style.transform = \`translateX(-\${currentPhotoIndex * 100}%)\`;
+      }
+      if (indicators) {
+        indicators.textContent = \`\${currentPhotoIndex + 1} / \${photos.length}\`;
+      }
+    }
+
+    // Add touch/swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const grid = document.getElementById('photoGrid');
+      if (grid) {
+        grid.addEventListener('touchstart', (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        });
+
+        grid.addEventListener('touchend', (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowLeft') navigateCarousel(-1);
+          if (e.key === 'ArrowRight') navigateCarousel(1);
+        });
+      }
+    });
+
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      if (touchEndX < touchStartX - swipeThreshold) {
+        navigateCarousel(1); // Swipe left
+      }
+      if (touchEndX > touchStartX + swipeThreshold) {
+        navigateCarousel(-1); // Swipe right
+      }
     }
 
     function formatDate(dateString) {
