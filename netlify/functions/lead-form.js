@@ -49,15 +49,15 @@ export async function handler(event) {
 
     .header {
       background: linear-gradient(135deg, #2C2C2C 0%, #1a1a1a 100%);
-      padding: 30px 40px;
+      padding: 10px 20px;
       text-align: center;
       color: white;
     }
 
     .logo {
-      max-width: 200px;
+      max-width: 100px;
       height: auto;
-      margin: 0 auto 20px;
+      margin: 0 auto 5px;
       display: block;
     }
 
@@ -70,42 +70,42 @@ export async function handler(event) {
     .container {
       max-width: 600px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 20px 20px;
     }
 
     .lead-capture {
       background: white;
-      padding: 50px 40px;
-      border-radius: 12px;
+      padding: 30px 25px;
+      border-radius: 8px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       text-align: center;
     }
 
     .lead-capture h1 {
-      font-size: 32px;
+      font-size: 26px;
       font-weight: 700;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       color: #212529;
     }
 
     .lead-capture .subtitle {
       color: #6C757D;
-      font-size: 18px;
-      margin-bottom: 35px;
-      line-height: 1.6;
+      font-size: 16px;
+      margin-bottom: 25px;
+      line-height: 1.5;
     }
 
     .input-group {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-align: left;
     }
 
     .input-group label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       color: #495057;
       font-weight: 500;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     .input-group input,
