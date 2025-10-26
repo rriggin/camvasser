@@ -51,7 +51,7 @@ export async function handler(event) {
 
     .header {
       background: linear-gradient(135deg, #2C2C2C 0%, #1a1a1a 100%);
-      padding: 30px 40px;
+      padding: 15px 20px;
       text-align: center;
       color: white;
     }
@@ -59,7 +59,7 @@ export async function handler(event) {
     .logo {
       max-width: 134px;
       height: auto;
-      margin: 0 auto 20px;
+      margin: 0 auto 10px;
       display: block;
     }
 
@@ -72,7 +72,7 @@ export async function handler(event) {
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 20px 20px;
     }
 
     /* Lead Capture Form */
@@ -162,27 +162,27 @@ export async function handler(event) {
 
     .project-info {
       background: white;
-      padding: 30px;
-      border-radius: 12px;
-      margin-bottom: 30px;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
     .project-info h2 {
-      font-size: 28px;
+      font-size: 22px;
       font-weight: 700;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .project-info .address {
       color: #6C757D;
-      font-size: 18px;
-      margin-bottom: 15px;
+      font-size: 15px;
+      margin-bottom: 10px;
     }
 
     .photo-count {
       color: #6C757D;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
     }
 
@@ -369,23 +369,23 @@ export async function handler(event) {
 
     .contact-cta {
       background: white;
-      padding: 40px;
-      border-radius: 12px;
+      padding: 25px 20px;
+      border-radius: 8px;
       text-align: center;
-      margin-top: 40px;
+      margin-bottom: 20px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
     .contact-cta h3 {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .contact-cta p {
       color: #6C757D;
-      margin-bottom: 25px;
-      font-size: 17px;
+      margin-bottom: 20px;
+      font-size: 15px;
     }
 
     .contact-cta .btn {
@@ -461,14 +461,14 @@ export async function handler(event) {
         <div class="photo-count" id="photoCount"></div>
       </div>
 
-      <div class="photo-grid" id="photoGrid">
-        <div class="loader"></div>
-      </div>
-
       <div class="contact-cta">
         <h3>Ready to get started?</h3>
         <p>Call us at <a href="tel:${tenantConfig.phone}" style="color: #28A745; text-decoration: none; font-weight: 600;">${tenantConfig.phone}</a> or click below.</p>
         <a href="/.netlify/functions/lead-form?tenant=${tenant}&projectId=${projectId}" class="btn">Schedule an Appointment</a>
+      </div>
+
+      <div class="photo-grid" id="photoGrid">
+        <div class="loader"></div>
       </div>
     </div>
   </div>
