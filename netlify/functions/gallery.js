@@ -77,13 +77,7 @@ export async function handler(event) {
 
     /* Lead Capture Form */
     .lead-capture {
-      background: white;
-      padding: 50px 40px;
-      border-radius: 12px;
-      max-width: 600px;
-      margin: 40px auto;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      text-align: center;
+      display: none;
     }
 
     .lead-capture h1 {
@@ -163,10 +157,6 @@ export async function handler(event) {
 
     /* Photo Gallery */
     .gallery-container {
-      display: none;
-    }
-
-    .gallery-container.visible {
       display: block;
     }
 
@@ -423,7 +413,7 @@ export async function handler(event) {
       <div class="contact-cta">
         <h3>Love What You See?</h3>
         <p>Ready to start your own project? Get in touch with us today!</p>
-        <a href="tel:${tenantConfig.phone}" class="btn">📞 Call Us: ${tenantConfig.phone}</a>
+        <a href="/.netlify/functions/lead-form?tenant=${tenant}&projectId=${projectId}" class="btn">Contact Us</a>
       </div>
     </div>
   </div>
@@ -439,41 +429,12 @@ export async function handler(event) {
   <script>
     const tenant = '${tenant}';
     const projectId = '${projectId}';
-    const skipLead = ${shouldSkipLead};
     let photos = [];
     let currentPhotoIndex = 0;
 
-    // If skipLead is true, automatically show gallery on page load
-    if (skipLead) {
-      document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('leadCapture').style.display = 'none';
-        document.getElementById('galleryContainer').classList.add('visible');
-        loadPhotos();
-      });
-    }
-
-    // Handle lead form submission
-    document.getElementById('leadForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const leadData = {
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        tenant: tenant,
-        projectId: projectId,
-        timestamp: new Date().toISOString()
-      };
-
-      console.log('Lead captured:', leadData);
-
-      // Hide lead form, show gallery
-      document.getElementById('leadCapture').style.display = 'none';
-      document.getElementById('galleryContainer').classList.add('visible');
-
-      // Load photos
-      await loadPhotos();
+    // Automatically load photos on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPhotos();
     });
 
     async function loadPhotos() {
