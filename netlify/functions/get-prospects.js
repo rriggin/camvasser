@@ -4,12 +4,10 @@ import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// Helper function to verify JWT token
 function verifyToken(authHeader) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
   }
-
   const token = authHeader.substring(7);
   try {
     return jwt.verify(token, JWT_SECRET);
@@ -19,7 +17,6 @@ function verifyToken(authHeader) {
 }
 
 export async function handler(event) {
-  // Only allow GET
   if (event.httpMethod !== 'GET') {
     return {
       statusCode: 405,
@@ -27,7 +24,6 @@ export async function handler(event) {
     };
   }
 
-  // Verify authentication
   const authHeader = event.headers.authorization || event.headers.Authorization;
   const user = verifyToken(authHeader);
 
@@ -40,79 +36,76 @@ export async function handler(event) {
   }
 
   try {
-    const { type, limit, page, sortBy, sortDir } = event.queryStringParameters || {};
-    // Always filter by the authenticated user's slug
-    const tenant = user.slug;
-
+    const { limit, page, homeownersOnly, projectId, sortBy, sortDir } = event.queryStringParameters || {};
     const limitNum = limit ? parseInt(limit) : 25;
     const pageNum = page ? parseInt(page) : 1;
     const skip = (pageNum - 1) * limitNum;
 
-    // Build sort order - default to createdAt desc
-    const validSortFields = ['createdAt', 'firstName', 'lastName', 'email', 'phone', 'address'];
+    // Build where clause
+    const where = {};
+
+    // Filter by tenant (from authenticated user)
+    if (user.slug) {
+      where.tenant = user.slug;
+    }
+
+    if (homeownersOnly === 'true') {
+      where.isHomeowner = true;
+    }
+
+    if (projectId) {
+      where.projectId = projectId;
+    }
+
+    // Build sort order
+    const validSortFields = ['name', 'createdAt', 'isHomeowner', 'companyName'];
     const sortField = validSortFields.includes(sortBy) ? sortBy : 'createdAt';
     const sortDirection = sortDir === 'asc' ? 'asc' : 'desc';
     const orderBy = { [sortField]: sortDirection };
 
-    if (type === 'business') {
-      // Fetch business user signups
-      const [businessUsers, total] = await Promise.all([
-        prisma.businessUser.findMany({
-          orderBy,
-          take: limitNum,
-          skip
-        }),
-        prisma.businessUser.count()
-      ]);
+    const prospects = await prisma.prospect.findMany({
+      where,
+      orderBy,
+      take: limitNum,
+      skip,
+      include: {
+        project: {
+          select: {
+            id: true,
+            address: true,
+            city: true,
+            state: true,
+            publicUrl: true
+          }
+        }
+      }
+    });
 
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'business',
-          count: businessUsers.length,
-          total,
-          page: pageNum,
-          totalPages: Math.ceil(total / limitNum),
-          leads: businessUsers
-        })
-      };
-    }
-
-    // Fetch users
-    const where = tenant ? { tenant } : {};
-
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
-        where,
-        orderBy,
-        take: limitNum,
-        skip
-      }),
-      prisma.user.count({ where })
-    ]);
+    const totalCount = await prisma.prospect.count({ where });
+    const homeownerCount = await prisma.prospect.count({
+      where: { ...where, isHomeowner: true }
+    });
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        type: 'user',
-        tenant: tenant || 'all',
-        count: users.length,
-        total,
+        count: prospects.length,
+        total: totalCount,
         page: pageNum,
-        totalPages: Math.ceil(total / limitNum),
-        leads: users
+        totalPages: Math.ceil(totalCount / limitNum),
+        homeowners: homeownerCount,
+        prospects
       })
     };
 
   } catch (error) {
-    console.error('Error fetching leads:', error);
+    console.error('Error fetching prospects:', error);
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        error: 'Failed to fetch leads',
+        error: 'Failed to fetch prospects',
         details: error.message
       })
     };

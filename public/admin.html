@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Camvasser Admin - Leads Dashboard</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -118,10 +119,16 @@
     }
 
     .stats {
-      display: grid;
-      grid-template-columns: 300px 1fr;
+      display: flex;
+      flex-direction: column;
       gap: 20px;
       margin-bottom: 30px;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
     .stat-card {
@@ -129,6 +136,7 @@
       padding: 24px;
       border-radius: 12px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      min-width: 200px;
     }
 
     .stat-label {
@@ -150,6 +158,7 @@
       padding: 24px;
       border-radius: 12px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      width: 100%;
     }
 
     .chart-title {
@@ -160,8 +169,8 @@
       margin-bottom: 16px;
     }
 
-    #leadsChart {
-      width: 100%;
+    .chart-card canvas {
+      width: 100% !important;
       height: 200px;
     }
 
@@ -373,6 +382,88 @@
         font-size: 28px;
       }
     }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .pagination button {
+      padding: 8px 16px;
+      border: 2px solid #E5E5E5;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .pagination button:hover:not(:disabled) {
+      border-color: #FFC107;
+      background: #FFF9E6;
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination button.active {
+      background: #FFC107;
+      border-color: #FFC107;
+      color: #1a1a1a;
+    }
+
+    .pagination-info {
+      color: #6C757D;
+      font-size: 14px;
+      margin: 0 10px;
+    }
+
+    th.sortable {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      padding-right: 24px;
+    }
+
+    th.sortable:hover {
+      background: #E9ECEF;
+    }
+
+    th.sortable::after {
+      content: '⇅';
+      position: absolute;
+      right: 8px;
+      opacity: 0.3;
+      font-size: 12px;
+    }
+
+    th.sortable.asc::after {
+      content: '↑';
+      opacity: 1;
+    }
+
+    th.sortable.desc::after {
+      content: '↓';
+      opacity: 1;
+    }
+
+    .tag-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 2px;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
@@ -402,21 +493,26 @@
       </div>
     </div>
 
-    <div class="stats" id="stats">
-      <!-- Stats will be populated here -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('leads')">Leads</button>
+      <button class="tab" onclick="switchTab('projects')">Projects</button>
+      <button class="tab" onclick="switchTab('prospects')">Prospects</button>
     </div>
 
     <!-- End-User Leads Section -->
-    <div class="tab-content active" id="endUser-content">
+    <div class="tab-content active" id="leads-content">
+      <div class="stats" id="leadsStats">
+        <!-- Leads stats will be populated here -->
+      </div>
       <div class="leads-table">
-        <table>
+        <table id="leadsTable">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Address</th>
+              <th class="sortable" data-sort="createdAt" onclick="sortTable('leads', 'createdAt')">Date</th>
+              <th class="sortable" data-sort="name" onclick="sortTable('leads', 'name')">Name</th>
+              <th class="sortable" data-sort="email" onclick="sortTable('leads', 'email')">Email</th>
+              <th class="sortable" data-sort="phone" onclick="sortTable('leads', 'phone')">Phone</th>
+              <th class="sortable" data-sort="address" onclick="sortTable('leads', 'address')">Address</th>
               <th>Project ID</th>
             </tr>
           </thead>
@@ -427,13 +523,138 @@
           </tbody>
         </table>
       </div>
+      <div id="leadsPagination" class="pagination"></div>
+    </div>
+
+    <!-- Projects Section -->
+    <div class="tab-content" id="projects-content">
+      <div class="stats" id="projectsStats">
+        <!-- Project stats will be populated here -->
+      </div>
+      <div class="filters">
+        <input type="text" id="projectSearch" placeholder="Search address, city, state..." style="padding: 10px 16px; border: 2px solid #E5E5E5; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 14px; width: 300px;" onkeypress="if(event.key==='Enter')loadProjects(1)">
+        <select id="tagFilter" onchange="loadProjects(1)" style="padding: 10px 16px; border: 2px solid #E5E5E5; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 14px;">
+          <option value="">All Tags</option>
+        </select>
+        <button type="button" onclick="loadProjects(1)" style="padding: 10px 20px; background: #FFC107; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Search</button>
+        <button onclick="clearProjectFilters()" style="padding: 10px 20px; background: #6C757D; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Clear</button>
+      </div>
+      <div class="leads-table">
+        <table id="projectsTable">
+          <thead>
+            <tr>
+              <th>Photo</th>
+              <th class="sortable" data-sort="address" onclick="sortTable('projects', 'address')">Address</th>
+              <th class="sortable" data-sort="city" onclick="sortTable('projects', 'city')">City</th>
+              <th class="sortable" data-sort="state" onclick="sortTable('projects', 'state')">State</th>
+              <th class="sortable" data-sort="ccCreatedAt" onclick="sortTable('projects', 'ccCreatedAt')">Created</th>
+              <th>Tags</th>
+              <th class="sortable" data-sort="photoCount" onclick="sortTable('projects', 'photoCount')">Photos</th>
+              <th class="sortable" data-sort="prospectCount" onclick="sortTable('projects', 'prospectCount')">Prospects</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="projectsList">
+            <tr>
+              <td colspan="9" class="loader">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="projectsPagination" class="pagination"></div>
+    </div>
+
+    <!-- Prospects Section -->
+    <div class="tab-content" id="prospects-content">
+      <div class="stats" id="prospectsStats">
+        <!-- Prospect stats will be populated here -->
+      </div>
+      <div class="filters">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" id="homeownersOnly" onchange="loadProspects(1)">
+          <span>Homeowners only</span>
+        </label>
+        <div id="projectFilter" style="display: none; margin-left: 20px; padding: 8px 16px; background: #FFF9E6; border-radius: 8px; color: #856404;">
+          <span id="projectFilterText"></span>
+          <button onclick="clearProjectFilter()" style="margin-left: 10px; background: none; border: none; cursor: pointer; font-weight: bold; color: #856404;">&times;</button>
+        </div>
+      </div>
+      <div class="leads-table">
+        <table id="prospectsTable">
+          <thead>
+            <tr>
+              <th class="sortable" data-sort="name" onclick="sortTable('prospects', 'name')">Name</th>
+              <th class="sortable" data-sort="project" onclick="sortTable('prospects', 'project')">Project</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th class="sortable" data-sort="status" onclick="sortTable('prospects', 'status')">Status</th>
+              <th class="sortable" data-sort="companyName" onclick="sortTable('prospects', 'companyName')">Company</th>
+            </tr>
+          </thead>
+          <tbody id="prospectsList">
+            <tr>
+              <td colspan="6" class="loader">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="prospectsPagination" class="pagination"></div>
     </div>
   </div>
 
   <script>
     let endUserLeadsData = [];
+    let projectsData = [];
+    let prospectsData = [];
     let authToken = null;
     let currentUser = null;
+
+    // Pagination state
+    const PAGE_SIZE = 25;
+    let leadsPagination = { page: 1, total: 0, totalPages: 0 };
+    let projectsPagination = { page: 1, total: 0, totalPages: 0 };
+    let prospectsPagination = { page: 1, total: 0, totalPages: 0 };
+
+    // Sort state
+    let sortState = {
+      leads: { column: 'createdAt', direction: 'desc' },
+      projects: { column: 'address', direction: 'asc' },
+      prospects: { column: 'name', direction: 'asc' }
+    };
+
+    // Tag color palette - vibrant, distinguishable colors
+    const tagColors = [
+      { bg: '#E3F2FD', text: '#1565C0' },  // Blue
+      { bg: '#E8F5E9', text: '#2E7D32' },  // Green
+      { bg: '#FFF3E0', text: '#E65100' },  // Orange
+      { bg: '#F3E5F5', text: '#7B1FA2' },  // Purple
+      { bg: '#E0F7FA', text: '#00838F' },  // Cyan
+      { bg: '#FCE4EC', text: '#C2185B' },  // Pink
+      { bg: '#FFF8E1', text: '#F9A825' },  // Amber
+      { bg: '#E8EAF6', text: '#3949AB' },  // Indigo
+      { bg: '#EFEBE9', text: '#5D4037' },  // Brown
+      { bg: '#F1F8E9', text: '#558B2F' },  // Light Green
+      { bg: '#E1F5FE', text: '#0277BD' },  // Light Blue
+      { bg: '#FBE9E7', text: '#D84315' },  // Deep Orange
+    ];
+
+    // Hash function to get consistent color for a tag
+    function getTagColor(tagValue) {
+      let hash = 0;
+      const str = tagValue.toLowerCase();
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      const index = Math.abs(hash) % tagColors.length;
+      return tagColors[index];
+    }
+
+    // Generate tag badge HTML
+    function renderTagBadge(tag) {
+      const color = getTagColor(tag.value || tag.display_value);
+      return `<span class="tag-badge" style="background: ${color.bg}; color: ${color.text};">${tag.display_value}</span>`;
+    }
 
     // Check authentication on page load
     window.addEventListener('load', () => {
@@ -486,8 +707,9 @@
       }
     }
 
-    async function loadEndUserLeads() {
-      const url = '/.netlify/functions/get-leads?limit=1000';
+    async function loadEndUserLeads(page = 1) {
+      const { column, direction } = sortState.leads;
+      const url = `/.netlify/functions/get-leads?limit=${PAGE_SIZE}&page=${page}&sortBy=${column}&sortDir=${direction}`;
 
       try {
         const response = await fetch(url, {
@@ -507,7 +729,13 @@
         const data = await response.json();
 
         endUserLeadsData = data.leads;
+        leadsPagination = {
+          page: data.page,
+          total: data.total,
+          totalPages: data.totalPages
+        };
         renderEndUserLeads();
+        renderPagination('leads', leadsPagination, loadEndUserLeads);
         updateStats();
 
       } catch (error) {
@@ -583,18 +811,43 @@
       select.value = currentValue;
     }
 
-    function updateStats() {
+    // Stats data from API
+    let leadsStatsData = null;
+    let projectsStatsData = null;
+    let prospectsStatsData = null;
+
+    async function loadStats(type) {
+      try {
+        const response = await fetch(`/.netlify/functions/get-stats?type=${type}&days=30`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (response.ok) {
+          return await response.json();
+        }
+      } catch (error) {
+        console.error(`Error loading ${type} stats:`, error);
+      }
+      return null;
+    }
+
+    async function updateStats() {
+      // Load real stats from API
+      leadsStatsData = await loadStats('leads');
+
+      const total = leadsStatsData?.total || leadsPagination.total || 0;
       const statsHTML = `
-        <div class="stat-card">
-          <div class="stat-label">Total Leads</div>
-          <div class="stat-value">${endUserLeadsData.length}</div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Leads</div>
+            <div class="stat-value">${total}</div>
+          </div>
         </div>
         <div class="chart-card">
           <div class="chart-title">Leads by Day (Last 30 Days)</div>
           <canvas id="leadsChart"></canvas>
         </div>
       `;
-      document.getElementById('stats').innerHTML = statsHTML;
+      document.getElementById('leadsStats').innerHTML = statsHTML;
 
       // Draw chart after DOM update
       setTimeout(() => drawLeadsChart(), 0);
@@ -611,8 +864,8 @@
       canvas.width = width;
       canvas.height = height;
 
-      // Get data for last 30 days
-      const last30Days = getLast30DaysData();
+      // Use API data if available, otherwise fall back to page data
+      const last30Days = leadsStatsData?.data || getLast30DaysData();
 
       // Find max value for scaling
       const maxLeads = Math.max(...last30Days.map(d => d.count), 1);
@@ -727,6 +980,746 @@
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
       window.location.href = '/login.html';
+    }
+
+    function switchTab(tab) {
+      // Update tab buttons
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(`${tab}-content`).classList.add('active');
+
+      // Load data if needed (always load first page)
+      if (tab === 'projects' && projectsPagination.total === 0) {
+        loadProjects(1);
+      }
+      if (tab === 'prospects' && prospectsPagination.total === 0) {
+        loadProspects(1);
+      }
+    }
+
+    async function loadProjects(page = 1) {
+      const search = document.getElementById('projectSearch')?.value || '';
+      const tagFilter = document.getElementById('tagFilter')?.value || '';
+      const { column, direction } = sortState.projects;
+      let url = `/.netlify/functions/get-projects?limit=${PAGE_SIZE}&page=${page}&sortBy=${column}&sortDir=${direction}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
+      if (tagFilter) url += `&tag=${encodeURIComponent(tagFilter)}`;
+
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const data = await response.json();
+        projectsData = data.projects;
+        projectsPagination = {
+          page: data.page,
+          total: data.total,
+          totalPages: data.totalPages
+        };
+        renderProjects();
+        renderPagination('projects', projectsPagination, loadProjects);
+        loadAllTags();
+        updateProjectsStats();
+
+      } catch (error) {
+        console.error('Error loading projects:', error);
+        document.getElementById('projectsList').innerHTML = `
+          <tr><td colspan="7" class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <div>Failed to load projects</div>
+          </td></tr>
+        `;
+      }
+    }
+
+    async function updateProjectsStats() {
+      // Load real stats from API
+      projectsStatsData = await loadStats('projects');
+
+      const total = projectsStatsData?.total || projectsPagination.total || 0;
+      const statsHTML = `
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Projects</div>
+            <div class="stat-value">${total}</div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Projects by Day (Last 30 Days)</div>
+          <canvas id="projectsChart"></canvas>
+        </div>
+      `;
+      document.getElementById('projectsStats').innerHTML = statsHTML;
+      setTimeout(() => drawProjectsChart(), 0);
+    }
+
+    function drawProjectsChart() {
+      const canvas = document.getElementById('projectsChart');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      const width = canvas.offsetWidth;
+      const height = 200;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      // Use API data if available
+      const last30Days = projectsStatsData?.data || getProjectsLast30DaysData();
+
+      // Find max value for scaling
+      const maxProjects = Math.max(...last30Days.map(d => d.count), 1);
+
+      // Chart dimensions
+      const padding = 40;
+      const chartWidth = width - padding * 2;
+      const chartHeight = height - padding * 2;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw grid lines
+      ctx.strokeStyle = '#F0F0F0';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 5; i++) {
+        const y = padding + (chartHeight / 5) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(width - padding, y);
+        ctx.stroke();
+      }
+
+      // Draw line
+      ctx.strokeStyle = '#28a745';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+
+      last30Days.forEach((day, index) => {
+        const x = padding + (chartWidth / (last30Days.length - 1)) * index;
+        const y = height - padding - (day.count / maxProjects) * chartHeight;
+
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+
+      ctx.stroke();
+
+      // Draw points
+      ctx.fillStyle = '#28a745';
+      last30Days.forEach((day, index) => {
+        const x = padding + (chartWidth / (last30Days.length - 1)) * index;
+        const y = height - padding - (day.count / maxProjects) * chartHeight;
+
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Draw Y-axis labels
+      ctx.fillStyle = '#6C757D';
+      ctx.font = '12px Outfit';
+      ctx.textAlign = 'right';
+      for (let i = 0; i <= 5; i++) {
+        const value = Math.round((maxProjects / 5) * (5 - i));
+        const y = padding + (chartHeight / 5) * i;
+        ctx.fillText(value.toString(), padding - 10, y + 4);
+      }
+
+      // Draw X-axis labels (show every 5th day)
+      ctx.textAlign = 'center';
+      last30Days.forEach((day, index) => {
+        if (index % 5 === 0 || index === last30Days.length - 1) {
+          const x = padding + (chartWidth / (last30Days.length - 1)) * index;
+          ctx.fillText(day.label, x, height - 10);
+        }
+      });
+    }
+
+    function getProjectsLast30DaysData() {
+      const days = [];
+      const now = new Date();
+
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        date.setHours(0, 0, 0, 0);
+
+        const nextDate = new Date(date);
+        nextDate.setDate(date.getDate() + 1);
+
+        const count = projectsData.filter(project => {
+          const projectDate = new Date(project.ccCreatedAt);
+          return projectDate >= date && projectDate < nextDate;
+        }).length;
+
+        days.push({
+          date,
+          label: (date.getMonth() + 1) + '/' + date.getDate(),
+          count
+        });
+      }
+
+      return days;
+    }
+
+    function renderProjects() {
+      const tbody = document.getElementById('projectsList');
+
+      if (projectsData.length === 0) {
+        tbody.innerHTML = `
+          <tr><td colspan="9" class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <div>No projects synced yet</div>
+          </td></tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = projectsData.map(project => {
+        // Get thumbnail from featureImage array
+        const thumbnail = project.featureImage?.find(img => img.type === 'thumbnail')?.url ||
+                         project.featureImage?.[0]?.url || '';
+
+        // Format tags as colored badges
+        const tagsHtml = project.tags?.length > 0
+          ? project.tags.map(tag => renderTagBadge(tag)).join('')
+          : '<span style="color: #999;">-</span>';
+
+        // Prospects with individual links
+        const prospectCount = project.prospectCount || 0;
+        let prospectHtml = '<span style="color: #999;">0</span>';
+        if (prospectCount > 0 && project.prospects?.length > 0) {
+          const prospectLinks = project.prospects.map(p => {
+            const badges = [];
+            if (p.isHomeowner) badges.push('<span style="background: #d4edda; color: #155724; padding: 1px 4px; border-radius: 3px; font-size: 9px; margin-left: 4px;">Owner</span>');
+            if (p.isDead) badges.push('<span style="background: #f8d7da; color: #721c24; padding: 1px 4px; border-radius: 3px; font-size: 9px; margin-left: 4px;">Deceased</span>');
+            return `<a href="#" onclick="viewProspect('${p.id}', '${project.id}'); return false;" style="color: #007bff; text-decoration: none; font-size: 12px; display: block; margin: 2px 0;">${p.name}${badges.join('')}</a>`;
+          }).join('');
+          prospectHtml = `
+            <div style="max-height: 100px; overflow-y: auto;">
+              ${prospectLinks}
+            </div>
+            <button onclick="viewProjectProspects('${project.id}', '${(project.address || '').replace(/'/g, "\\'")}', ${prospectCount})" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 11px; margin-top: 4px;">View all ${prospectCount}</button>
+          `;
+        }
+
+        // Format created date
+        const createdDate = project.ccCreatedAt ? formatDate(project.ccCreatedAt) : '-';
+
+        return `
+          <tr data-project-id="${project.id}">
+            <td>
+              ${thumbnail ?
+                `<img src="${thumbnail}" alt="Project" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">` :
+                '<div style="width: 60px; height: 60px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #999;">No img</div>'
+              }
+            </td>
+            <td><strong>${project.address || '-'}</strong></td>
+            <td>${project.city || '-'}</td>
+            <td>${project.state || '-'}</td>
+            <td style="white-space: nowrap;">${createdDate}</td>
+            <td style="max-width: 250px;">${tagsHtml}</td>
+            <td>${project.photoCount || 0}</td>
+            <td style="min-width: 150px;">${prospectHtml}</td>
+            <td>
+              ${project.publicUrl ?
+                `<a href="${project.publicUrl}" target="_blank" style="color: #FFC107; text-decoration: none; font-weight: 600;">View →</a>` :
+                '-'
+              }
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    let currentProjectFilter = null;
+
+    function viewProjectProspects(projectId, address, count) {
+      currentProjectFilter = { id: projectId, address: address };
+
+      // Show the filter badge
+      document.getElementById('projectFilter').style.display = 'flex';
+      document.getElementById('projectFilterText').textContent = `Filtering: ${address} (${count} prospects)`;
+
+      // Switch to prospects tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab')[2].classList.add('active'); // Prospects tab
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('prospects-content').classList.add('active');
+
+      // Load prospects for this project (reset to page 1)
+      loadProspects(1);
+    }
+
+    function clearProjectFilter() {
+      currentProjectFilter = null;
+      document.getElementById('projectFilter').style.display = 'none';
+      loadProspects(1);
+    }
+
+    function clearProjectFilters() {
+      document.getElementById('projectSearch').value = '';
+      document.getElementById('tagFilter').value = '';
+      loadProjects(1);
+    }
+
+    // Collect all unique tags from API
+    let allTags = [];
+    let tagsLoaded = false;
+
+    function populateTagFilter() {
+      const select = document.getElementById('tagFilter');
+      if (!select) return;
+
+      const currentValue = select.value;
+      select.innerHTML = '<option value="">All Tags</option>' +
+        allTags.map(tag => `<option value="${tag.value}">${tag.display_value}</option>`).join('');
+      select.value = currentValue;
+    }
+
+    async function loadAllTags() {
+      if (tagsLoaded) return;
+
+      try {
+        const response = await fetch('/.netlify/functions/get-tags', {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          allTags = data.tags;
+          tagsLoaded = true;
+          populateTagFilter();
+        }
+      } catch (error) {
+        console.error('Error loading tags:', error);
+      }
+    }
+
+    function viewProject(projectId) {
+      // Switch to projects tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab')[1].classList.add('active'); // Projects tab
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('projects-content').classList.add('active');
+
+      // Find and highlight the project in the list, or search for it
+      const existingProject = projectsData.find(p => p.id === projectId);
+      if (existingProject) {
+        // Project already loaded - scroll to it and highlight
+        renderProjects();
+        // Highlight effect using CSS
+        setTimeout(() => {
+          const row = document.querySelector(`#projectsList tr[data-project-id="${projectId}"]`);
+          if (row) {
+            row.style.background = '#FFF9E6';
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      } else {
+        // Load all projects to find it
+        loadProjects();
+      }
+    }
+
+    function viewProspect(prospectId, projectId) {
+      // Set the project filter to show this prospect
+      const project = projectsData.find(p => p.id === projectId);
+      if (project) {
+        currentProjectFilter = { id: projectId, address: project.address || 'Unknown' };
+        document.getElementById('projectFilter').style.display = 'flex';
+        document.getElementById('projectFilterText').textContent = `Filtering: ${project.address || 'Unknown'}`;
+      }
+
+      // Switch to prospects tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab')[2].classList.add('active'); // Prospects tab
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('prospects-content').classList.add('active');
+
+      // Load prospects (page 1) and highlight the specific one
+      loadProspects(1).then(() => {
+        setTimeout(() => {
+          const rows = document.querySelectorAll('#prospectsList tr');
+          rows.forEach(row => {
+            // Reset all backgrounds first
+            row.style.background = '';
+          });
+          // Find the prospect by ID in the data and highlight
+          const prospectIndex = prospectsData.findIndex(p => p.id === prospectId);
+          if (prospectIndex >= 0 && rows[prospectIndex]) {
+            rows[prospectIndex].style.background = '#FFF9E6';
+            rows[prospectIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      });
+    }
+
+    async function loadProspects(page = 1) {
+      const homeownersOnly = document.getElementById('homeownersOnly')?.checked || false;
+      const { column, direction } = sortState.prospects;
+      let url = `/.netlify/functions/get-prospects?limit=${PAGE_SIZE}&page=${page}&sortBy=${column}&sortDir=${direction}${homeownersOnly ? '&homeownersOnly=true' : ''}`;
+
+      if (currentProjectFilter) {
+        url += `&projectId=${currentProjectFilter.id}`;
+      }
+
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const data = await response.json();
+        prospectsData = data.prospects;
+        prospectsPagination = {
+          page: data.page,
+          total: data.total,
+          totalPages: data.totalPages,
+          homeowners: data.homeowners
+        };
+        renderProspects();
+        renderPagination('prospects', prospectsPagination, loadProspects);
+        updateProspectsStats();
+
+      } catch (error) {
+        console.error('Error loading prospects:', error);
+        document.getElementById('prospectsList').innerHTML = `
+          <tr><td colspan="6" class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <div>Failed to load prospects</div>
+          </td></tr>
+        `;
+      }
+    }
+
+    async function updateProspectsStats() {
+      // Load real stats from API
+      prospectsStatsData = await loadStats('prospects');
+
+      const total = prospectsStatsData?.total || prospectsPagination.total || 0;
+      const homeowners = prospectsStatsData?.homeowners || prospectsPagination.homeowners || 0;
+      const statsHTML = `
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Prospects</div>
+            <div class="stat-value">${total}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Homeowners</div>
+            <div class="stat-value">${homeowners}</div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Prospects by Day (Last 30 Days)</div>
+          <canvas id="prospectsChart"></canvas>
+        </div>
+      `;
+      document.getElementById('prospectsStats').innerHTML = statsHTML;
+      setTimeout(() => drawProspectsChart(), 0);
+    }
+
+    function drawProspectsChart() {
+      const canvas = document.getElementById('prospectsChart');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      const width = canvas.offsetWidth;
+      const height = 200;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      // Use API data if available
+      const last30Days = prospectsStatsData?.data || getProspectsLast30DaysData();
+
+      // Find max value for scaling
+      const maxProspects = Math.max(...last30Days.map(d => d.count), 1);
+
+      // Chart dimensions
+      const padding = 40;
+      const chartWidth = width - padding * 2;
+      const chartHeight = height - padding * 2;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw grid lines
+      ctx.strokeStyle = '#F0F0F0';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 5; i++) {
+        const y = padding + (chartHeight / 5) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(width - padding, y);
+        ctx.stroke();
+      }
+
+      // Draw line
+      ctx.strokeStyle = '#007bff';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+
+      last30Days.forEach((day, index) => {
+        const x = padding + (chartWidth / (last30Days.length - 1)) * index;
+        const y = height - padding - (day.count / maxProspects) * chartHeight;
+
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+
+      ctx.stroke();
+
+      // Draw points
+      ctx.fillStyle = '#007bff';
+      last30Days.forEach((day, index) => {
+        const x = padding + (chartWidth / (last30Days.length - 1)) * index;
+        const y = height - padding - (day.count / maxProspects) * chartHeight;
+
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Draw Y-axis labels
+      ctx.fillStyle = '#6C757D';
+      ctx.font = '12px Outfit';
+      ctx.textAlign = 'right';
+      for (let i = 0; i <= 5; i++) {
+        const value = Math.round((maxProspects / 5) * (5 - i));
+        const y = padding + (chartHeight / 5) * i;
+        ctx.fillText(value.toString(), padding - 10, y + 4);
+      }
+
+      // Draw X-axis labels (show every 5th day)
+      ctx.textAlign = 'center';
+      last30Days.forEach((day, index) => {
+        if (index % 5 === 0 || index === last30Days.length - 1) {
+          const x = padding + (chartWidth / (last30Days.length - 1)) * index;
+          ctx.fillText(day.label, x, height - 10);
+        }
+      });
+    }
+
+    function getProspectsLast30DaysData() {
+      const days = [];
+      const now = new Date();
+
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        date.setHours(0, 0, 0, 0);
+
+        const nextDate = new Date(date);
+        nextDate.setDate(date.getDate() + 1);
+
+        const count = prospectsData.filter(prospect => {
+          const prospectDate = new Date(prospect.createdAt);
+          return prospectDate >= date && prospectDate < nextDate;
+        }).length;
+
+        days.push({
+          date,
+          label: (date.getMonth() + 1) + '/' + date.getDate(),
+          count
+        });
+      }
+
+      return days;
+    }
+
+    function renderProspects() {
+      const tbody = document.getElementById('prospectsList');
+
+      if (prospectsData.length === 0) {
+        tbody.innerHTML = `
+          <tr><td colspan="6" class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <div>No prospects found</div>
+          </td></tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = prospectsData.map(prospect => {
+        // Get best phone (highest score)
+        const bestPhone = prospect.phones?.sort((a, b) => b.score - a.score)[0];
+        const phoneDisplay = bestPhone ? `${bestPhone.number} <span style="color: #999; font-size: 11px;">(${bestPhone.type})</span>` : '-';
+
+        // Get first email
+        const emailDisplay = prospect.emails?.[0] || '-';
+
+        // Status badges
+        let statusBadges = '';
+        if (prospect.isHomeowner) {
+          statusBadges += '<span class="badge" style="background: #d4edda; color: #155724; margin-right: 4px;">Owner</span>';
+        }
+        if (prospect.isCurrentResident) {
+          statusBadges += '<span class="badge" style="background: #cce5ff; color: #004085;">Resident</span>';
+        }
+        if (prospect.isDead) {
+          statusBadges += '<span class="badge" style="background: #f8d7da; color: #721c24;">Deceased</span>';
+        }
+
+        // Company info
+        const companyInfo = prospect.jobTitle && prospect.companyName
+          ? `${prospect.jobTitle}<br><span style="color: #999;">${prospect.companyName}</span>`
+          : prospect.companyName || '-';
+
+        // Project link
+        let projectHtml = '-';
+        if (prospect.project) {
+          const projectAddress = prospect.project.address || 'Unknown';
+          const projectLocation = [prospect.project.city, prospect.project.state].filter(Boolean).join(', ');
+          projectHtml = `
+            <a href="#" onclick="viewProject('${prospect.project.id}'); return false;" style="color: #FFC107; text-decoration: none; font-weight: 500;">
+              ${projectAddress}
+            </a>
+            ${projectLocation ? `<br><span style="color: #999; font-size: 12px;">${projectLocation}</span>` : ''}
+          `;
+        } else if (prospect.lookupAddress) {
+          projectHtml = `<span style="color: #999;">${prospect.lookupAddress}</span>`;
+        }
+
+        return `
+          <tr>
+            <td>
+              <strong>${prospect.name}</strong>
+              ${prospect.linkedinUrl ? `<a href="${prospect.linkedinUrl}" target="_blank" style="margin-left: 8px; color: #0077b5; text-decoration: none;">in</a>` : ''}
+              ${prospect.dateOfBirth ? `<br><span style="color: #999; font-size: 12px;">DOB: ${prospect.dateOfBirth}</span>` : ''}
+            </td>
+            <td style="max-width: 200px;">${projectHtml}</td>
+            <td>${phoneDisplay}</td>
+            <td style="max-width: 200px; word-break: break-all; font-size: 13px;">${emailDisplay}</td>
+            <td>${statusBadges || '-'}</td>
+            <td style="font-size: 13px;">${companyInfo}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Sort function - server-side sorting
+    function sortTable(tableType, column) {
+      const state = sortState[tableType];
+
+      // Toggle direction if same column, otherwise default to asc
+      if (state.column === column) {
+        state.direction = state.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        state.column = column;
+        state.direction = 'asc';
+      }
+
+      // Update header styling
+      const tableId = tableType === 'leads' ? 'leadsTable' : tableType === 'projects' ? 'projectsTable' : 'prospectsTable';
+      const headers = document.querySelectorAll(`#${tableId} th.sortable`);
+      headers.forEach(th => {
+        th.classList.remove('asc', 'desc');
+        if (th.dataset.sort === column) {
+          th.classList.add(state.direction);
+        }
+      });
+
+      // Trigger server-side fetch with sort params (reset to page 1)
+      if (tableType === 'leads') {
+        loadEndUserLeads(1);
+      } else if (tableType === 'projects') {
+        loadProjects(1);
+      } else {
+        loadProspects(1);
+      }
+    }
+
+    // Pagination rendering helper
+    function renderPagination(type, pagination, loadFn) {
+      const container = document.getElementById(`${type}Pagination`);
+      if (!container) return;
+
+      const { page, total, totalPages, homeowners } = pagination;
+
+      if (totalPages <= 1) {
+        // Show just the info if only one page
+        let info = `Showing ${total} ${type}`;
+        if (type === 'prospects' && homeowners !== undefined) {
+          info += ` (${homeowners} homeowners)`;
+        }
+        container.innerHTML = `<span class="pagination-info">${info}</span>`;
+        return;
+      }
+
+      let html = '';
+
+      // Previous button
+      html += `<button onclick="${loadFn.name}(${page - 1})" ${page === 1 ? 'disabled' : ''}>← Prev</button>`;
+
+      // Page numbers
+      const maxPages = 5;
+      let startPage = Math.max(1, page - Math.floor(maxPages / 2));
+      let endPage = Math.min(totalPages, startPage + maxPages - 1);
+      if (endPage - startPage < maxPages - 1) {
+        startPage = Math.max(1, endPage - maxPages + 1);
+      }
+
+      if (startPage > 1) {
+        html += `<button onclick="${loadFn.name}(1)">1</button>`;
+        if (startPage > 2) {
+          html += '<span class="pagination-info">...</span>';
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        html += `<button onclick="${loadFn.name}(${i})" class="${i === page ? 'active' : ''}">${i}</button>`;
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          html += '<span class="pagination-info">...</span>';
+        }
+        html += `<button onclick="${loadFn.name}(${totalPages})">${totalPages}</button>`;
+      }
+
+      // Next button
+      html += `<button onclick="${loadFn.name}(${page + 1})" ${page === totalPages ? 'disabled' : ''}>Next →</button>`;
+
+      // Info text
+      const start = (page - 1) * PAGE_SIZE + 1;
+      const end = Math.min(page * PAGE_SIZE, total);
+      let info = `Showing ${start}-${end} of ${total}`;
+      if (type === 'prospects' && homeowners !== undefined) {
+        info += ` (${homeowners} homeowners)`;
+      }
+      html += `<span class="pagination-info">${info}</span>`;
+
+      container.innerHTML = html;
     }
   </script>
 </body>

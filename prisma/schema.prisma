@@ -7,8 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // End-user leads (homeowners searching for their project photos)
@@ -46,30 +47,129 @@ model BusinessUser {
   @@index([email])
 }
 
-// Cached CompanyCam project data
+// CompanyCam project data (synced from API)
 model Project {
-  id            String   @id  // CompanyCam project ID
-  tenant        String   // Which business (e.g., "budroofing")
-  address       String?
-  city          String?
-  state         String?
-  postalCode    String?
-  name          String?
-  status        String?  // active, deleted, etc
-  photoCount    Int      @default(0)
-  publicUrl     String?
-  coordinates   Json?    // {lat, lon}
+  id                    String   @id  // CompanyCam project ID
+  tenant                String?  // Which business (e.g., "budroofing") - optional for global sync
+
+  // CompanyCam identifiers
+  companyId             String?
+  creatorId             String?
+  creatorType           String?
+  creatorName           String?
+
+  // Status
+  status                String?  // active, deleted, etc
+  archived              Boolean  @default(false)
+  public                Boolean  @default(true)
+
+  // Project info
+  name                  String?
+
+  // Address fields
+  address               String?  // street_address_1
+  streetAddress2        String?
+  city                  String?
+  state                 String?
+  postalCode            String?
+  country               String?
+
+  // URLs and identifiers
+  slug                  String?
+  projectUrl            String?
+  publicUrl             String?
+  embeddedProjectUrl    String?
+
+  // Location
+  coordinates           Json?    // {lat, lon}
+  geofence              Json?    // Array of coordinates
+
+  // Media
+  featureImage          Json?    // Array of image objects (original, web, thumbnail)
+  photoCount            Int      @default(0)
+  photos                Json?    // Array of photo objects from API
+  videos                Json?    // Array of video objects from API
+  documents             Json?    // Array of document objects from API
+
+  // Integrations & metadata
+  integrations          Json?    // Array of integration objects
+  primaryContact        Json?
+  notepad               String?
+  tags                  Json?    // Array of tag/label objects from API
+
+  // Timestamps from CompanyCam
+  ccCreatedAt           DateTime?  // created_at from API
+  ccUpdatedAt           DateTime?  // updated_at from API
 
   // Sync tracking
-  lastSyncedAt  DateTime @default(now())
-  createdAt     DateTime @default(now())
+  lastSyncedAt          DateTime @default(now())
+  whitepagesEnrichedAt  DateTime?  // When prospects were fetched from Whitepages
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   // Relations
-  labels        ProjectLabel[]
+  labels                ProjectLabel[]
+  prospects             Prospect[]
 
   @@index([tenant])
   @@index([address])
+  @@index([city, state])
+  @@index([status])
+  @@index([ccUpdatedAt])
   @@index([lastSyncedAt])
+}
+
+// Prospects discovered via Whitepages reverse address lookup
+model Prospect {
+  id                    String   @id @default(cuid())
+
+  // Whitepages identifiers
+  whitepagesId          String   @unique  // Whitepages person ID (e.g., "PX3vb4nlq3k")
+
+  // Link to project (the address we looked up)
+  projectId             String?
+  project               Project? @relation(fields: [projectId], references: [id])
+
+  // Basic info
+  name                  String
+  aliases               Json?    // Array of alternate names
+  isDead                Boolean  @default(false)
+  dateOfBirth           String?  // Format: "1991-10-04" or partial "1915-00-00"
+
+  // Contact info (arrays with metadata)
+  phones                Json?    // [{number, type, score}, ...]
+  emails                Json?    // ["email1@x.com", "email2@y.com"]
+
+  // Addresses
+  currentAddresses      Json?    // [{id, address}, ...]
+  historicAddresses     Json?    // [{id, address}, ...]
+  ownedProperties       Json?    // [{id, address}, ...] - indicates property ownership
+
+  // Professional info
+  linkedinUrl           String?
+  companyName           String?
+  jobTitle              String?
+
+  // Relationships
+  relatives             Json?    // [{id, name}, ...]
+
+  // Flags
+  isHomeowner           Boolean  @default(false)  // Computed: has owned_properties at lookup address
+  isCurrentResident     Boolean  @default(false)  // Computed: current_addresses includes lookup address
+
+  // Tracking
+  lookupAddress         String?  // The address we used to find this prospect
+  tenant                String?  // Which business tenant this belongs to
+
+  // Timestamps
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([tenant])
+  @@index([isHomeowner])
+  @@index([isCurrentResident])
+  @@index([name])
 }
 
 // Project labels (tags/statuses from CompanyCam)
