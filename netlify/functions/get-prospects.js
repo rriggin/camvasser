@@ -58,7 +58,7 @@ export async function handler(event) {
     }
 
     // Build sort order
-    const validSortFields = ['name', 'createdAt', 'isHomeowner', 'companyName'];
+    const validSortFields = ['name', 'createdAt', 'isHomeowner', 'companyName', 'status'];
     const sortField = validSortFields.includes(sortBy) ? sortBy : 'createdAt';
     const sortDirection = sortDir === 'asc' ? 'asc' : 'desc';
     const orderBy = { [sortField]: sortDirection };

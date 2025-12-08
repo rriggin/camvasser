@@ -479,28 +479,15 @@
       <button onclick="logout()" class="logout-btn">Logout</button>
     </div>
 
-    <div class="settings-card">
-      <div class="settings-title">Settings</div>
-      <div class="settings-grid">
-        <div class="settings-item">
-          <div class="settings-label">Domain</div>
-          <div class="settings-value" id="settingsDomain">-</div>
-        </div>
-        <div class="settings-item">
-          <div class="settings-label">CompanyCam API Key</div>
-          <div class="settings-value" id="settingsApiKey">-</div>
-        </div>
-      </div>
-    </div>
-
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('leads')">Leads</button>
-      <button class="tab" onclick="switchTab('projects')">Projects</button>
+      <button class="tab active" onclick="switchTab('projects')">Projects</button>
       <button class="tab" onclick="switchTab('prospects')">Prospects</button>
+      <button class="tab" onclick="switchTab('leads')">Leads</button>
+      <button class="tab" onclick="switchTab('settings')">Settings</button>
     </div>
 
     <!-- End-User Leads Section -->
-    <div class="tab-content active" id="leads-content">
+    <div class="tab-content" id="leads-content">
       <div class="stats" id="leadsStats">
         <!-- Leads stats will be populated here -->
       </div>
@@ -527,7 +514,7 @@
     </div>
 
     <!-- Projects Section -->
-    <div class="tab-content" id="projects-content">
+    <div class="tab-content active" id="projects-content">
       <div class="stats" id="projectsStats">
         <!-- Project stats will be populated here -->
       </div>
@@ -587,18 +574,36 @@
               <th class="sortable" data-sort="project" onclick="sortTable('prospects', 'project')">Project</th>
               <th>Phone</th>
               <th>Email</th>
+              <th>Type</th>
               <th class="sortable" data-sort="status" onclick="sortTable('prospects', 'status')">Status</th>
               <th class="sortable" data-sort="companyName" onclick="sortTable('prospects', 'companyName')">Company</th>
             </tr>
           </thead>
           <tbody id="prospectsList">
             <tr>
-              <td colspan="6" class="loader">Loading...</td>
+              <td colspan="7" class="loader">Loading...</td>
             </tr>
           </tbody>
         </table>
       </div>
       <div id="prospectsPagination" class="pagination"></div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="tab-content" id="settings-content">
+      <div class="settings-card" style="margin-top: 0;">
+        <div class="settings-title">Account Settings</div>
+        <div class="settings-grid">
+          <div class="settings-item">
+            <div class="settings-label">Domain</div>
+            <div class="settings-value" id="settingsDomain">-</div>
+          </div>
+          <div class="settings-item">
+            <div class="settings-label">CompanyCam API Key</div>
+            <div class="settings-value" id="settingsApiKey">-</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -676,7 +681,8 @@
       // Load settings
       loadSettings();
 
-      loadEndUserLeads();
+      // Load projects (default tab)
+      loadProjects(1);
     });
 
     async function loadSettings() {
@@ -997,6 +1003,9 @@
       }
       if (tab === 'prospects' && prospectsPagination.total === 0) {
         loadProspects(1);
+      }
+      if (tab === 'leads' && leadsPagination.total === 0) {
+        loadEndUserLeads(1);
       }
     }
 
@@ -1557,12 +1566,70 @@
       return days;
     }
 
+    // Status options with colors
+    const STATUS_OPTIONS = [
+      { value: '', label: 'Select status...', bg: '#f8f9fa', text: '#6c757d' },
+      { value: 'left_voicemail', label: 'Left voicemail', bg: '#fff3cd', text: '#856404' },
+      { value: 'hung_up', label: 'Hung up', bg: '#f8d7da', text: '#721c24' },
+      { value: 'wrong_number', label: 'Wrong number', bg: '#e2e3e5', text: '#383d41' },
+      { value: 'callback', label: 'Callback', bg: '#e2e3e5', text: '#383d41' },
+      { value: 'appointment_set', label: 'Appointment set', bg: '#d4edda', text: '#155724' },
+      { value: 'bad_number', label: 'Bad number', bg: '#e2e3e5', text: '#383d41' },
+      { value: 'follow_up_email_sent', label: 'Follow-up email sent', bg: '#d4edda', text: '#155724' },
+      { value: 'roof_replaced', label: 'Roof replaced', bg: '#e2e3e5', text: '#383d41' },
+      { value: 'not_interested', label: 'Not interested', bg: '#f8d7da', text: '#721c24' },
+      { value: 'no_need', label: 'No need', bg: '#e2e3e5', text: '#383d41' },
+      { value: 'no_answer', label: 'No answer', bg: '#e2e3e5', text: '#383d41' },
+      { value: 'wants_quote_phone', label: 'Wants quote over the phone', bg: '#cce5ff', text: '#004085' },
+      { value: 'follow_up_sms_sent', label: 'Follow up SMS Sent', bg: '#d4edda', text: '#155724' }
+    ];
+
+    function getStatusOption(value) {
+      return STATUS_OPTIONS.find(s => s.value === value) || STATUS_OPTIONS[0];
+    }
+
+    async function updateProspectStatus(prospectId, status) {
+      try {
+        const response = await fetch('/.netlify/functions/update-prospect-status', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prospectId, status })
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          alert('Failed to update status: ' + (data.error || 'Unknown error'));
+          return;
+        }
+
+        // Update local data
+        const prospect = prospectsData.find(p => p.id === prospectId);
+        if (prospect) {
+          prospect.status = status || null;
+        }
+
+        // Update the dropdown styling
+        const select = document.querySelector(`select[data-prospect-id="${prospectId}"]`);
+        if (select) {
+          const option = getStatusOption(status);
+          select.style.background = option.bg;
+          select.style.color = option.text;
+        }
+      } catch (error) {
+        console.error('Error updating status:', error);
+        alert('Failed to update status');
+      }
+    }
+
     function renderProspects() {
       const tbody = document.getElementById('prospectsList');
 
       if (prospectsData.length === 0) {
         tbody.innerHTML = `
-          <tr><td colspan="6" class="empty-state">
+          <tr><td colspan="7" class="empty-state">
             <div class="empty-state-icon">📭</div>
             <div>No prospects found</div>
           </td></tr>
@@ -1578,17 +1645,32 @@
         // Get first email
         const emailDisplay = prospect.emails?.[0] || '-';
 
-        // Status badges
-        let statusBadges = '';
+        // Type badges (Resident/Owner)
+        let typeBadges = '';
         if (prospect.isHomeowner) {
-          statusBadges += '<span class="badge" style="background: #d4edda; color: #155724; margin-right: 4px;">Owner</span>';
+          typeBadges += '<span class="badge" style="background: #d4edda; color: #155724; margin-right: 4px;">Owner</span>';
         }
         if (prospect.isCurrentResident) {
-          statusBadges += '<span class="badge" style="background: #cce5ff; color: #004085;">Resident</span>';
+          typeBadges += '<span class="badge" style="background: #cce5ff; color: #004085;">Resident</span>';
         }
         if (prospect.isDead) {
-          statusBadges += '<span class="badge" style="background: #f8d7da; color: #721c24;">Deceased</span>';
+          typeBadges += '<span class="badge" style="background: #f8d7da; color: #721c24;">Deceased</span>';
         }
+
+        // Status dropdown
+        const currentStatus = getStatusOption(prospect.status);
+        const statusOptions = STATUS_OPTIONS.map(s =>
+          `<option value="${s.value}" ${s.value === (prospect.status || '') ? 'selected' : ''}>${s.label}</option>`
+        ).join('');
+        const statusDropdown = `
+          <select
+            data-prospect-id="${prospect.id}"
+            onchange="updateProspectStatus('${prospect.id}', this.value)"
+            style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; cursor: pointer; background: ${currentStatus.bg}; color: ${currentStatus.text}; min-width: 140px;"
+          >
+            ${statusOptions}
+          </select>
+        `;
 
         // Company info
         const companyInfo = prospect.jobTitle && prospect.companyName
@@ -1620,7 +1702,8 @@
             <td style="max-width: 200px;">${projectHtml}</td>
             <td>${phoneDisplay}</td>
             <td style="max-width: 200px; word-break: break-all; font-size: 13px;">${emailDisplay}</td>
-            <td>${statusBadges || '-'}</td>
+            <td>${typeBadges || '-'}</td>
+            <td>${statusDropdown}</td>
             <td style="font-size: 13px;">${companyInfo}</td>
           </tr>
         `;

@@ -157,6 +157,9 @@ model Prospect {
   isHomeowner           Boolean  @default(false)  // Computed: has owned_properties at lookup address
   isCurrentResident     Boolean  @default(false)  // Computed: current_addresses includes lookup address
 
+  // Call status tracking
+  status                String?  // Call status: left_voicemail, hung_up, wrong_number, callback, appointment_set, bad_number, follow_up_email_sent, roof_replaced, not_interested, no_need, no_answer, wants_quote_phone, follow_up_sms_sent
+
   // Tracking
   lookupAddress         String?  // The address we used to find this prospect
   tenant                String?  // Which business tenant this belongs to
