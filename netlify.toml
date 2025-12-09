@@ -27,20 +27,20 @@
 
 [[redirects]]
   from = "/kcroofrestoration/photos"
-  to = "/.netlify/functions/page?tenant=kcroofrestoration"
+  to = "/.netlify/functions/kcroofrestoration-photos"
   status = 200
   force = true
 
 [[redirects]]
   from = "/kcroofrestoration/instant-roof-quote"
-  to = "/.netlify/functions/page?tenant=kcroofrestoration"
+  to = "/.netlify/functions/kcroofrestoration-instant-roof-quote"
   status = 200
   force = true
 
 # KC Roof index page (after specific routes)
 [[redirects]]
   from = "/kcroofrestoration"
-  to = "/.netlify/functions/tenant-index?tenant=kcroofrestoration"
+  to = "/.netlify/functions/kcroofrestoration"
   status = 200
   force = true
 
