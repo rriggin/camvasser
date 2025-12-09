@@ -26,6 +26,18 @@
   force = true
 
 [[redirects]]
+  from = "/kcroofrestoration/roof-spray-vs-sealant-options"
+  to = "/.netlify/functions/flow-roof-spray-options?tenant=kcroofrestoration"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/kcroofrestoration/dirty-roof-costs"
+  to = "/.netlify/functions/flow-dirty-roof-costs?tenant=kcroofrestoration"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/kcroofrestoration/photos"
   to = "/.netlify/functions/page?tenant=kcroofrestoration"
   status = 200

@@ -39,7 +39,7 @@ const TENANT_CONFIG = {
       heading: "View Your Photos",
       subheading: "Enter your address to view photos from your home.",
       og_image: "/logos/kcrr-badge.png",
-      flows: ['roof-claim-denial', 'photos']
+      flows: ['roof-claim-denial', 'roof-spray-vs-sealant-options', 'dirty-roof-costs', 'photos']
     }
   }
 };

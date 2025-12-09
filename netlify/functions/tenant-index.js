@@ -167,11 +167,27 @@ function generateHTML(tenant) {
     </div>
 
     <div class="flows">
-      ${tenant.flows.includes('roof-claim-denial') ? `
+      ${tenant.flows.includes('roof-claim-denial') || tenant.flows.includes('roof-spray-vs-sealant-options') ? `
       <div class="section-label">Qualification</div>
+      ` : ''}
+      ${tenant.flows.includes('roof-claim-denial') ? `
       <a href="/${tenant.slug}/roof-claim-denial" class="flow-card">
         <h3>Roof Claim Denied? <span class="arrow">&rarr;</span></h3>
         <p>See if you qualify for a second opinion review</p>
+      </a>
+      ` : ''}
+      ${tenant.flows.includes('roof-spray-vs-sealant-options') ? `
+      <a href="/${tenant.slug}/roof-spray-vs-sealant-options" class="flow-card">
+        <h3>Roof Spray vs Sealant Options <span class="arrow">&rarr;</span></h3>
+        <p>Find out which treatment is right for your roof</p>
+      </a>
+      ` : ''}
+
+      ${tenant.flows.includes('dirty-roof-costs') ? `
+      <div class="section-label">Learn More</div>
+      <a href="/${tenant.slug}/dirty-roof-costs" class="flow-card">
+        <h3>Dirty Roof Costing You Money? <span class="arrow">&rarr;</span></h3>
+        <p>Learn how a dirty roof may be impacting your energy bills and roof lifespan</p>
       </a>
       ` : ''}
 
