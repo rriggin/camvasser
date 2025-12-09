@@ -47,19 +47,19 @@
 # Bud Roofing flows (more specific paths first)
 [[redirects]]
   from = "/budroofing/roof-claim-denial"
-  to = "/.netlify/functions/flow-roof-claim-denial?tenant=budroofing"
+  to = "/.netlify/functions/budroofing-roof-claim-denial"
   status = 200
   force = true
 
 [[redirects]]
   from = "/budroofing/photos"
-  to = "/.netlify/functions/page?tenant=budroofing"
+  to = "/.netlify/functions/budroofing-photos"
   status = 200
   force = true
 
 [[redirects]]
   from = "/budroofing/instant-roof-quote"
-  to = "/.netlify/functions/page?tenant=budroofing"
+  to = "/.netlify/functions/budroofing-instant-roof-quote"
   status = 200
   force = true
 
