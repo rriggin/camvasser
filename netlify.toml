@@ -9,19 +9,19 @@
 # KC Roof Restoration flows (more specific paths first)
 [[redirects]]
   from = "/kcroofrestoration/roof-claim-denial"
-  to = "/.netlify/functions/flow-roof-claim-denial?tenant=kcroofrestoration"
+  to = "/.netlify/functions/kcroofrestoration-roof-claim-denial"
   status = 200
   force = true
 
 [[redirects]]
   from = "/kcroofrestoration/roof-spray-vs-sealant-options"
-  to = "/.netlify/functions/flow-roof-spray-options?tenant=kcroofrestoration"
+  to = "/.netlify/functions/kcroofrestoration-roof-spray-options"
   status = 200
   force = true
 
 [[redirects]]
   from = "/kcroofrestoration/dirty-roof-costs"
-  to = "/.netlify/functions/flow-dirty-roof-costs?tenant=kcroofrestoration"
+  to = "/.netlify/functions/kcroofrestoration-dirty-roof-costs"
   status = 200
   force = true
 
