@@ -21,7 +21,8 @@
       font-family: 'Outfit', -apple-system, system-ui, sans-serif;
       background: #f5f5f5;
       color: #212529;
-      padding: 40px 20px;
+      padding: 20px 15px;
+      font-size: 13px;
     }
 
     .container {
@@ -33,45 +34,46 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
+      margin-bottom: 15px;
     }
 
     .header-left {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 12px;
     }
 
     .company-logo {
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
       object-fit: contain;
-      border-radius: 8px;
+      border-radius: 6px;
       background: white;
-      padding: 8px;
+      padding: 5px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .header-text h1 {
-      font-size: 32px;
+      font-size: 20px;
       font-weight: 700;
-      margin-bottom: 10px;
+      margin-bottom: 2px;
     }
 
     .header-text .subtitle {
       color: #6C757D;
+      font-size: 12px;
     }
 
     .logout-btn {
-      padding: 12px 24px;
+      padding: 8px 16px;
       background: #DC3545;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       font-family: 'Outfit', sans-serif;
       font-weight: 600;
-      font-size: 15px;
+      font-size: 12px;
       transition: all 0.2s;
     }
 
@@ -82,21 +84,21 @@
 
     .tabs {
       display: flex;
-      gap: 10px;
-      margin-bottom: 30px;
+      gap: 5px;
+      margin-bottom: 15px;
       border-bottom: 2px solid #E5E5E5;
     }
 
     .tab {
-      padding: 12px 24px;
+      padding: 8px 16px;
       background: none;
       border: none;
-      font-size: 16px;
+      font-size: 13px;
       font-weight: 600;
       font-family: 'Outfit', sans-serif;
       cursor: pointer;
       color: #6C757D;
-      border-bottom: 3px solid transparent;
+      border-bottom: 2px solid transparent;
       transition: all 0.3s;
       margin-bottom: -2px;
     }
@@ -133,44 +135,44 @@
 
     .stat-card {
       background: white;
-      padding: 16px;
-      border-radius: 10px;
+      padding: 10px;
+      border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
     .stat-label {
       color: #6C757D;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .stat-value {
-      font-size: 24px;
+      font-size: 18px;
       font-weight: 700;
       color: #FFC107;
     }
 
     .chart-card {
       background: white;
-      padding: 16px;
-      border-radius: 10px;
+      padding: 10px;
+      border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       flex: 1;
     }
 
     .chart-title {
       color: #6C757D;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
     }
 
     .chart-card canvas {
       width: 100% !important;
-      height: 100px;
+      height: 80px;
     }
 
     @media (max-width: 968px) {
@@ -181,26 +183,26 @@
 
     .filters {
       background: white;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
       display: flex;
-      gap: 15px;
+      gap: 10px;
       align-items: center;
       flex-wrap: wrap;
     }
 
     .filters select {
-      padding: 10px 16px;
-      border: 2px solid #E5E5E5;
-      border-radius: 8px;
+      padding: 6px 10px;
+      border: 1px solid #E5E5E5;
+      border-radius: 6px;
       font-family: 'Outfit', sans-serif;
-      font-size: 14px;
+      font-size: 12px;
     }
 
     .leads-table {
       background: white;
-      border-radius: 12px;
+      border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
@@ -208,19 +210,21 @@
     table {
       width: 100%;
       border-collapse: collapse;
+      font-size: 12px;
     }
 
     th {
       background: #F8F9FA;
-      padding: 16px;
+      padding: 8px 10px;
       text-align: left;
       font-weight: 600;
       color: #212529;
-      border-bottom: 2px solid #E5E5E5;
+      border-bottom: 1px solid #E5E5E5;
+      font-size: 11px;
     }
 
     td {
-      padding: 16px;
+      padding: 8px 10px;
       border-bottom: 1px solid #F8F9FA;
     }
 
@@ -230,9 +234,9 @@
 
     .badge {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
       font-weight: 600;
     }
 
@@ -386,20 +390,20 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      margin-top: 20px;
+      gap: 5px;
+      margin-top: 12px;
       flex-wrap: wrap;
     }
 
     .pagination button {
-      padding: 8px 16px;
-      border: 2px solid #E5E5E5;
+      padding: 5px 10px;
+      border: 1px solid #E5E5E5;
       background: white;
-      border-radius: 6px;
+      border-radius: 4px;
       cursor: pointer;
       font-family: 'Outfit', sans-serif;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 11px;
       transition: all 0.2s;
     }
 
@@ -421,15 +425,15 @@
 
     .pagination-info {
       color: #6C757D;
-      font-size: 14px;
-      margin: 0 10px;
+      font-size: 11px;
+      margin: 0 8px;
     }
 
     th.sortable {
       cursor: pointer;
       user-select: none;
       position: relative;
-      padding-right: 24px;
+      padding-right: 18px;
     }
 
     th.sortable:hover {
@@ -456,11 +460,11 @@
 
     .tag-badge {
       display: inline-block;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 9px;
       font-weight: 600;
-      margin: 2px;
+      margin: 1px;
       white-space: nowrap;
     }
   </style>
@@ -480,8 +484,8 @@
 
     <div class="tabs">
       <button class="tab active" onclick="switchTab('projects')">Addresses</button>
-      <button class="tab" onclick="switchTab('prospects')">People</button>
-      <button class="tab" onclick="switchTab('leads')">Inquiries</button>
+      <button class="tab" onclick="switchTab('prospects')">Contacts</button>
+      <button class="tab" onclick="switchTab('leads')">Leads</button>
       <button class="tab" onclick="switchTab('settings')">Settings</button>
     </div>
 
@@ -489,6 +493,10 @@
     <div class="tab-content" id="leads-content">
       <div class="stats" id="leadsStats">
         <!-- Leads stats will be populated here -->
+      </div>
+      <div class="filters">
+        <input type="text" id="leadSearch" placeholder="name:john, email:gmail, phone:816" oninput="debounceLeadSearch()" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; flex: 1;">
+        <button id="showAllLeadsBtn" style="margin-left: 8px; padding: 6px 12px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; cursor: pointer;">Show all</button>
       </div>
       <div class="leads-table">
         <table id="leadsTable">
@@ -518,17 +526,8 @@
         <!-- Project stats will be populated here -->
       </div>
       <div class="filters">
-        <input type="text" id="projectSearch" placeholder="Search address, city, state..." style="padding: 10px 16px; border: 2px solid #E5E5E5; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 14px; width: 300px;" onkeypress="if(event.key==='Enter')loadProjects(1)">
-        <select id="tagFilter" onchange="loadProjects(1)" style="padding: 10px 16px; border: 2px solid #E5E5E5; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 14px;">
-          <option value="">All Tags</option>
-        </select>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-          <input type="checkbox" id="hasProspectsFilter" onchange="loadProjects(1)">
-          <span>Has people</span>
-        </label>
-        <button type="button" onclick="loadProjects(1)" style="padding: 10px 20px; background: #FFC107; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Search</button>
-        <button onclick="clearProjectFilters()" style="padding: 10px 20px; background: #6C757D; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Clear</button>
-        <span id="projectsFilterCount" style="color: #6C757D; font-size: 14px; margin-left: auto;"></span>
+        <input type="text" id="projectSearch" placeholder="address:main, city:sedalia, tag:residential, contacts:yes" oninput="debounceProjectSearch()" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; flex: 1;">
+        <button id="showAllProjectsBtn" style="margin-left: 8px; padding: 6px 12px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; cursor: pointer;">Show all</button>
       </div>
       <div class="leads-table">
         <table id="projectsTable">
@@ -561,11 +560,9 @@
         <!-- Prospect stats will be populated here -->
       </div>
       <div class="filters">
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-          <input type="checkbox" id="homeownersOnly" onchange="loadProspects(1)">
-          <span>Homeowners only</span>
-        </label>
-        <div id="projectFilter" style="display: none; margin-left: 20px; padding: 8px 16px; background: #FFF9E6; border-radius: 8px; color: #856404;">
+        <input type="text" id="prospectSearch" placeholder="name:john, status:interested, email:yes" oninput="debounceProspectSearch()" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; flex: 1;">
+        <button id="showAllBtn" style="margin-left: 8px; padding: 6px 12px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; cursor: pointer;">Show all</button>
+        <div id="projectFilter" style="display: none; margin-left: 15px; padding: 8px 16px; background: #FFF9E6; border-radius: 8px; color: #856404;">
           <span id="projectFilterText"></span>
           <button onclick="clearProjectFilter()" style="margin-left: 10px; background: none; border: none; cursor: pointer; font-weight: bold; color: #856404;">&times;</button>
         </div>
@@ -580,7 +577,7 @@
               <th>Email</th>
               <th>Type</th>
               <th class="sortable" data-sort="status" onclick="sortTable('prospects', 'status')">Status</th>
-              <th class="sortable" data-sort="companyName" onclick="sortTable('prospects', 'companyName')">Company</th>
+              <th class="sortable" data-sort="createdAt" onclick="sortTable('prospects', 'createdAt')">Created</th>
             </tr>
           </thead>
           <tbody id="prospectsList">
@@ -629,6 +626,40 @@
       leads: { column: 'createdAt', direction: 'desc' },
       projects: { column: 'address', direction: 'asc' },
       prospects: { column: 'name', direction: 'asc' }
+    };
+
+    // Search debounce for prospects
+    let prospectSearchTimeout = null;
+    window.debounceProspectSearch = function() {
+      clearTimeout(prospectSearchTimeout);
+      prospectSearchTimeout = setTimeout(() => loadProspects(1), 300);
+    };
+
+    window.clearProspectSearch = function() {
+      console.log('clearProspectSearch called');
+      document.getElementById('prospectSearch').value = '';
+      // Clear project filter without reloading (we'll reload after)
+      currentProjectFilter = null;
+      const projectFilterEl = document.getElementById('projectFilter');
+      if (projectFilterEl) projectFilterEl.style.display = 'none';
+      console.log('Calling loadProspects(1)');
+      loadProspects(1);
+    };
+
+    // Search debounce for projects
+    let projectSearchTimeout = null;
+    let showAllProjects = false;
+    window.debounceProjectSearch = function() {
+      clearTimeout(projectSearchTimeout);
+      projectSearchTimeout = setTimeout(() => loadProjects(1), 300);
+    };
+
+    // Search debounce for leads
+    let leadSearchTimeout = null;
+    let showAllLeads = false;
+    window.debounceLeadSearch = function() {
+      clearTimeout(leadSearchTimeout);
+      leadSearchTimeout = setTimeout(() => loadEndUserLeads(1), 300);
     };
 
     // Tag color palette - vibrant, distinguishable colors
@@ -687,6 +718,27 @@
 
       // Load addresses (default tab)
       loadProjects(1);
+
+      // Set up Show all button click handler for Contacts
+      document.getElementById('showAllBtn').addEventListener('click', function() {
+        document.getElementById('prospectSearch').value = '';
+        currentProjectFilter = null;
+        const projectFilterEl = document.getElementById('projectFilter');
+        if (projectFilterEl) projectFilterEl.style.display = 'none';
+        loadProspects(1, true); // true = show all on one page
+      });
+
+      // Set up Show all button click handler for Addresses
+      document.getElementById('showAllProjectsBtn').addEventListener('click', function() {
+        document.getElementById('projectSearch').value = '';
+        loadProjects(1, true); // true = show all on one page
+      });
+
+      // Set up Show all button click handler for Leads
+      document.getElementById('showAllLeadsBtn').addEventListener('click', function() {
+        document.getElementById('leadSearch').value = '';
+        loadEndUserLeads(1, true); // true = show all on one page
+      });
     });
 
     async function loadSettings() {
@@ -717,9 +769,13 @@
       }
     }
 
-    async function loadEndUserLeads(page = 1) {
+    async function loadEndUserLeads(page = 1, showAll = false) {
+      showAllLeads = showAll;
+      const search = document.getElementById('leadSearch')?.value || '';
       const { column, direction } = sortState.leads;
-      const url = `/.netlify/functions/get-leads?limit=${PAGE_SIZE}&page=${page}&sortBy=${column}&sortDir=${direction}`;
+      const limit = showAll ? 1000 : PAGE_SIZE;
+      let url = `/.netlify/functions/get-leads?limit=${limit}&page=${page}&sortBy=${column}&sortDir=${direction}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
 
       try {
         const response = await fetch(url, {
@@ -1013,12 +1069,14 @@
       }
     }
 
-    async function loadProjects(page = 1) {
+    async function loadProjects(page = 1, showAll = false) {
+      showAllProjects = showAll;
       const search = document.getElementById('projectSearch')?.value || '';
       const tagFilter = document.getElementById('tagFilter')?.value || '';
       const hasProspects = document.getElementById('hasProspectsFilter')?.checked;
       const { column, direction } = sortState.projects;
-      let url = `/.netlify/functions/get-projects?limit=${PAGE_SIZE}&page=${page}&sortBy=${column}&sortDir=${direction}`;
+      const limit = showAll ? 1000 : PAGE_SIZE;
+      let url = `/.netlify/functions/get-projects?limit=${limit}&page=${page}&sortBy=${column}&sortDir=${direction}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
       if (tagFilter) url += `&tag=${encodeURIComponent(tagFilter)}`;
       if (hasProspects) url += `&hasProspects=true`;
@@ -1052,7 +1110,9 @@
         // Update filter count
         const filterCountEl = document.getElementById('projectsFilterCount');
         const hasFilters = search || tagFilter || hasProspects;
-        filterCountEl.textContent = hasFilters ? `${data.total} results` : '';
+        if (filterCountEl) {
+          filterCountEl.textContent = hasFilters ? `${data.total} results` : '';
+        }
 
       } catch (error) {
         console.error('Error loading projects:', error);
@@ -1084,11 +1144,11 @@
             <div class="stat-value">${thisWeek}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">With People</div>
+            <div class="stat-label">With Contacts</div>
             <div class="stat-value" style="color: #28a745;">${withProspects}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">No People</div>
+            <div class="stat-label">No Contacts</div>
             <div class="stat-value" style="color: #6c757d;">${withoutProspects}</div>
           </div>
         </div>
@@ -1107,7 +1167,7 @@
 
       const ctx = canvas.getContext('2d');
       const width = canvas.offsetWidth;
-      const height = 100;
+      const height = 80;
 
       canvas.width = width;
       canvas.height = height;
@@ -1409,10 +1469,17 @@
       });
     }
 
-    async function loadProspects(page = 1) {
-      const homeownersOnly = document.getElementById('homeownersOnly')?.checked || false;
+    let showAllProspects = false; // Track if we're showing all prospects
+
+    async function loadProspects(page = 1, showAll = false) {
+      showAllProspects = showAll;
+      const searchQuery = document.getElementById('prospectSearch')?.value?.trim() || '';
+      const limit = showAll ? 1000 : PAGE_SIZE; // Use large limit when showing all
+      console.log('loadProspects called, page:', page, 'search:', searchQuery, 'showAll:', showAll);
       const { column, direction } = sortState.prospects;
-      let url = `/.netlify/functions/get-prospects?limit=${PAGE_SIZE}&page=${page}&sortBy=${column}&sortDir=${direction}${homeownersOnly ? '&homeownersOnly=true' : ''}`;
+      let url = `/.netlify/functions/get-prospects?limit=${limit}&page=${page}&sortBy=${column}&sortDir=${direction}`;
+      if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+      console.log('Fetching URL:', url);
 
       if (currentProjectFilter) {
         url += `&projectId=${currentProjectFilter.id}`;
@@ -1433,6 +1500,7 @@
         }
 
         const data = await response.json();
+        console.log('Got data, total:', data.total, 'page:', data.page, 'totalPages:', data.totalPages);
         prospectsData = data.prospects;
         prospectsPagination = {
           page: data.page,
@@ -1731,7 +1799,7 @@
             <td style="max-width: 200px; word-break: break-all; font-size: 13px;">${emailDisplay}</td>
             <td>${typeBadges || '-'}</td>
             <td>${statusDropdown}</td>
-            <td style="font-size: 13px;">${companyInfo}</td>
+            <td style="white-space: nowrap; font-size: 13px; color: #6c757d;">${prospect.createdAt ? formatDate(prospect.createdAt).split(',')[0] : '-'}</td>
           </tr>
         `;
       }).join('');
@@ -1765,7 +1833,7 @@
       } else if (tableType === 'projects') {
         loadProjects(1);
       } else {
-        loadProspects(1);
+        loadProspects(1, showAllProspects); // Preserve showAll state when sorting
       }
     }
 

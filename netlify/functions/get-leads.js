@@ -40,7 +40,7 @@ export async function handler(event) {
   }
 
   try {
-    const { type, limit, page, sortBy, sortDir } = event.queryStringParameters || {};
+    const { type, limit, page, sortBy, sortDir, search } = event.queryStringParameters || {};
     // Always filter by the authenticated user's slug
     const tenant = user.slug;
 
@@ -81,6 +81,38 @@ export async function handler(event) {
 
     // Fetch users
     const where = tenant ? { tenant } : {};
+
+    // Handle search with field:value syntax
+    if (search) {
+      const colonMatch = search.match(/^(\w+)[:=](.+)$/i);
+
+      if (colonMatch) {
+        const [, field, value] = colonMatch;
+        const fieldLower = field.toLowerCase();
+        const valueLower = value.toLowerCase().trim();
+
+        if (fieldLower === 'name' || fieldLower === 'firstname') {
+          where.firstName = { contains: value.trim(), mode: 'insensitive' };
+        } else if (fieldLower === 'lastname') {
+          where.lastName = { contains: value.trim(), mode: 'insensitive' };
+        } else if (fieldLower === 'email') {
+          where.email = { contains: value.trim(), mode: 'insensitive' };
+        } else if (fieldLower === 'phone') {
+          where.phone = { contains: value.trim(), mode: 'insensitive' };
+        } else if (fieldLower === 'address') {
+          where.address = { contains: value.trim(), mode: 'insensitive' };
+        }
+      } else {
+        // Simple text search across name, email, phone, address
+        where.OR = [
+          { firstName: { contains: search, mode: 'insensitive' } },
+          { lastName: { contains: search, mode: 'insensitive' } },
+          { email: { contains: search, mode: 'insensitive' } },
+          { phone: { contains: search, mode: 'insensitive' } },
+          { address: { contains: search, mode: 'insensitive' } }
+        ];
+      }
+    }
 
     const [leads, total] = await Promise.all([
       prisma.lead.findMany({

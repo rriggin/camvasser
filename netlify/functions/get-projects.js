@@ -59,12 +59,60 @@ export async function handler(event) {
       where.prospects = { none: {} };
     }
 
+    // Handle search with field:value syntax
     if (search) {
-      where.OR = [
-        { address: { contains: search, mode: 'insensitive' } },
-        { city: { contains: search, mode: 'insensitive' } },
-        { state: { contains: search, mode: 'insensitive' } }
-      ];
+      const colonMatch = search.match(/^(\w+)[:=](.+)$/i);
+
+      if (colonMatch) {
+        const [, field, value] = colonMatch;
+        const fieldLower = field.toLowerCase();
+        const valueLower = value.toLowerCase().trim();
+
+        if (fieldLower === 'address') {
+          where.address = { contains: value.trim(), mode: 'insensitive' };
+        } else if (fieldLower === 'city') {
+          where.city = { contains: value.trim(), mode: 'insensitive' };
+        } else if (fieldLower === 'state') {
+          where.state = { contains: value.trim(), mode: 'insensitive' };
+        } else if (fieldLower === 'tag') {
+          // Tag search is handled separately via the tag parameter
+          // But support it here too for convenience
+          const tagPattern = `%"value": "${value.trim()}"%`;
+          const projectIds = await prisma.$queryRaw`
+            SELECT id FROM "Project"
+            WHERE tags::text ILIKE ${tagPattern}
+          `;
+          const ids = projectIds.map(p => p.id);
+          if (ids.length === 0) {
+            return {
+              statusCode: 200,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                count: 0,
+                total: 0,
+                page: pageNum,
+                totalPages: 0,
+                projects: []
+              })
+            };
+          }
+          where.id = { in: ids };
+        } else if (fieldLower === 'contacts' || fieldLower === 'prospects') {
+          // contacts:yes = has contacts, contacts:no = no contacts
+          if (['yes', 'true', 'has', '1'].includes(valueLower)) {
+            where.prospects = { some: {} };
+          } else if (['no', 'false', 'none', '0'].includes(valueLower)) {
+            where.prospects = { none: {} };
+          }
+        }
+      } else {
+        // Simple text search across address, city, state
+        where.OR = [
+          { address: { contains: search, mode: 'insensitive' } },
+          { city: { contains: search, mode: 'insensitive' } },
+          { state: { contains: search, mode: 'insensitive' } }
+        ];
+      }
     }
 
     // Filter by tag if provided - use raw SQL for PostgreSQL JSON search
