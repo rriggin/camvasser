@@ -6,19 +6,7 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-[[redirects]]
-  from = "/budroofing"
-  to = "/.netlify/functions/budroofing"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/kcroofrestoration"
-  to = "/.netlify/functions/kcroofrestoration"
-  status = 200
-  force = true
-
-# KC Roof Restoration flows
+# KC Roof Restoration flows (more specific paths first)
 [[redirects]]
   from = "/kcroofrestoration/roof-claim-denial"
   to = "/.netlify/functions/flow-roof-claim-denial?tenant=kcroofrestoration"
@@ -49,7 +37,14 @@
   status = 200
   force = true
 
-# Bud Roofing flows
+# KC Roof index page (after specific routes)
+[[redirects]]
+  from = "/kcroofrestoration"
+  to = "/.netlify/functions/tenant-index?tenant=kcroofrestoration"
+  status = 200
+  force = true
+
+# Bud Roofing flows (more specific paths first)
 [[redirects]]
   from = "/budroofing/roof-claim-denial"
   to = "/.netlify/functions/flow-roof-claim-denial?tenant=budroofing"
@@ -65,5 +60,12 @@
 [[redirects]]
   from = "/budroofing/instant-roof-quote"
   to = "/.netlify/functions/page?tenant=budroofing"
+  status = 200
+  force = true
+
+# Bud Roofing index page (after specific routes)
+[[redirects]]
+  from = "/budroofing"
+  to = "/.netlify/functions/budroofing"
   status = 200
   force = true
