@@ -91,6 +91,19 @@ export async function handler(event) {
 
       total = await prisma.project.count();
 
+      // Count projects with prospects
+      const withProspects = await prisma.project.count({
+        where: { prospects: { some: {} } }
+      });
+
+      // Count projects created this week
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - 7);
+      weekStart.setHours(0, 0, 0, 0);
+      const thisWeek = await prisma.project.count({
+        where: { ccCreatedAt: { gte: weekStart } }
+      });
+
       // Group by day
       const dayCounts = {};
       projects.forEach(project => {
@@ -111,6 +124,12 @@ export async function handler(event) {
           count: dayCounts[dayStr] || 0
         });
       }
+
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, total, withProspects, thisWeek, days: numDays, data })
+      };
 
     } else if (type === 'prospects') {
       // Get prospects by day

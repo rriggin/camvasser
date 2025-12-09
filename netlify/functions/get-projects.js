@@ -40,7 +40,7 @@ export async function handler(event) {
   }
 
   try {
-    const { limit, page, search, status, sortBy, sortDir, tag } = event.queryStringParameters || {};
+    const { limit, page, search, status, sortBy, sortDir, tag, hasProspects } = event.queryStringParameters || {};
     const limitNum = limit ? parseInt(limit) : 25;
     const pageNum = page ? parseInt(page) : 1;
     const skip = (pageNum - 1) * limitNum;
@@ -50,6 +50,13 @@ export async function handler(event) {
 
     if (status) {
       where.status = status;
+    }
+
+    // Filter by hasProspects
+    if (hasProspects === 'true') {
+      where.prospects = { some: {} };
+    } else if (hasProspects === 'false') {
+      where.prospects = { none: {} };
     }
 
     if (search) {
