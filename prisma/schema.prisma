@@ -20,7 +20,7 @@ model Lead {
   email     String?
   phone     String?
   address   String?  // The address they searched for
-  projectId String?  // CompanyCam project ID they viewed
+  projectId String?  // CompanyCam project ID they viewed (optional)
   tenant    String   // Which business this lead belongs to (e.g., "budroofing")
   status    String?  // Call status
   campaign  String?  // Campaign name: winter_promo, etc.
@@ -28,10 +28,27 @@ model Lead {
   callDate  DateTime? // Date of call
   createdAt DateTime @default(now())
 
+  // Flow/source tracking
+  source      String?  // gallery, flow, manual, etc.
+  flowType    String?  // qualify, emergency, educate, address_search
+  flowSlug    String?  // roof-claim-denial, roof-leak-emergency, etc.
+  flowData    Json?    // Quiz answers and other flow-specific data
+
+  // Computed/qualification fields
+  urgencyLevel  String?  // high, medium, low, unknown
+  qualifyScore  String?  // strong, moderate, unknown
+
+  // UTM tracking
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+
   @@map("User") // Keep using existing User table
   @@index([tenant])
   @@index([createdAt])
   @@index([campaign])
+  @@index([source])
+  @@index([flowType])
 }
 
 // Business users (contractors signing up to use Camvasser)

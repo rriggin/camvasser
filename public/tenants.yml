@@ -38,21 +38,20 @@ tenants:
     # Social media preview (Open Graph)
     og_image: "https://budroofing.com/bud-vector.png"
 
-# Example of adding another tenant:
-#
-#  acmeroofing:
-#    name: "ACME Roofing Co"
-#    slug: "acmeroofing"
-#    logo: "/logos/acme-logo.png"
-#    phone: "800-555-1234"
-#    colors:
-#      primary: "#0066CC"
-#      primaryHover: "#0052A3"
-#      background: "#1a1a1a"
-#      logoBackground: "#1a1a1a"
-#    companycam_api_token_env: "ACMEROOFING_COMPANYCAM_TOKEN"
-#    page_title: "View Your Project Photos - ACME Roofing"
-#    page_subtitle: "Enter your address to view photos from your roofing project"
-#    heading: "View Your Photos"
-#    subheading: "Enter your address to view photos from your project."
-#    og_image: "https://acmeroofing.com/logo.png"
+  kcroofrestoration:
+    name: "KC Roof Restoration"
+    slug: "kcroofrestoration"
+    domain: "kcroofrestoration.com"
+    logo: "/logos/kcrr-badge.png"
+    phone: "855-661-7663"
+    colors:
+      primary: "#156ed7"
+      primaryHover: "#1058b0"
+      background: "#31364c"
+      logoBackground: "#31364c"
+    companycam_api_token_env: "BUDROOFING_COMPANYCAM_TOKEN"
+    page_title: "View Your Project Photos - KC Roof Restoration"
+    page_subtitle: "Enter your address to view photos from your roofing project"
+    heading: "View Your Photos"
+    subheading: "Enter your address to view photos from your home."
+    og_image: "/logos/kcrr-badge.png"

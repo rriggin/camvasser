@@ -11,3 +11,47 @@
   to = "/.netlify/functions/budroofing"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/kcroofrestoration"
+  to = "/.netlify/functions/kcroofrestoration"
+  status = 200
+  force = true
+
+# KC Roof Restoration flows
+[[redirects]]
+  from = "/kcroofrestoration/roof-claim-denial"
+  to = "/.netlify/functions/flow-roof-claim-denial?tenant=kcroofrestoration"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/kcroofrestoration/photos"
+  to = "/.netlify/functions/page?tenant=kcroofrestoration"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/kcroofrestoration/instant-roof-quote"
+  to = "/.netlify/functions/page?tenant=kcroofrestoration"
+  status = 200
+  force = true
+
+# Bud Roofing flows
+[[redirects]]
+  from = "/budroofing/roof-claim-denial"
+  to = "/.netlify/functions/flow-roof-claim-denial?tenant=budroofing"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/budroofing/photos"
+  to = "/.netlify/functions/page?tenant=budroofing"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/budroofing/instant-roof-quote"
+  to = "/.netlify/functions/page?tenant=budroofing"
+  status = 200
+  force = true

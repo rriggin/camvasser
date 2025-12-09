@@ -383,8 +383,8 @@ function generateHTML(tenant) {
       </div>
 
       <div class="powered-by">
+        <img src="/favicon.png" alt="Camvasser" style="height: 20px; width: auto;">
         <span>Powered by Camvasser</span>
-        <img src="/company-cam-logo.png" alt="CompanyCam">
       </div>
     </div>
   </div>
