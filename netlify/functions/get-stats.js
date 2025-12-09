@@ -51,7 +51,7 @@ export async function handler(event) {
       // Get leads by day
       const where = user.slug ? { tenant: user.slug } : {};
 
-      const leads = await prisma.user.findMany({
+      const leads = await prisma.lead.findMany({
         where: {
           ...where,
           createdAt: { gte: startDate }
@@ -59,7 +59,7 @@ export async function handler(event) {
         select: { createdAt: true }
       });
 
-      total = await prisma.user.count({ where });
+      total = await prisma.lead.count({ where });
 
       // Group by day
       const dayCounts = {};

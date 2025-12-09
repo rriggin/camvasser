@@ -12,20 +12,26 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// End-user leads (homeowners searching for their project photos)
-model User {
+// Leads (people who have contacted us / inbound inquiries)
+model Lead {
   id        String   @id @default(cuid())
   firstName String
   lastName  String
-  email     String
-  phone     String
-  address   String   // The address they searched for
+  email     String?
+  phone     String?
+  address   String?  // The address they searched for
   projectId String?  // CompanyCam project ID they viewed
   tenant    String   // Which business this lead belongs to (e.g., "budroofing")
+  status    String?  // Call status
+  campaign  String?  // Campaign name: winter_promo, etc.
+  notes     String?  // Call notes
+  callDate  DateTime? // Date of call
   createdAt DateTime @default(now())
 
+  @@map("User") // Keep using existing User table
   @@index([tenant])
   @@index([createdAt])
+  @@index([campaign])
 }
 
 // Business users (contractors signing up to use Camvasser)
@@ -159,6 +165,8 @@ model Prospect {
 
   // Call status tracking
   status                String?  // Call status: left_voicemail, hung_up, wrong_number, callback, appointment_set, bad_number, follow_up_email_sent, roof_replaced, not_interested, no_need, no_answer, wants_quote_phone, follow_up_sms_sent
+  campaign              String?  // Campaign name: door_hanger, winter_promo, etc.
+  notes                 String?  // Call notes
 
   // Tracking
   lookupAddress         String?  // The address we used to find this prospect

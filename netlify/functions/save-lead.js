@@ -29,7 +29,7 @@ export async function handler(event) {
     }
 
     // Save to database
-    const lead = await prisma.user.create({
+    const lead = await prisma.lead.create({
       data: {
         firstName,
         lastName,
@@ -41,7 +41,7 @@ export async function handler(event) {
       }
     });
 
-    console.log('User saved:', lead.id);
+    console.log('Lead saved:', lead.id);
 
     return {
       statusCode: 200,

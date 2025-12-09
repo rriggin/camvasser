@@ -82,27 +82,27 @@ export async function handler(event) {
     // Fetch users
     const where = tenant ? { tenant } : {};
 
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
+    const [leads, total] = await Promise.all([
+      prisma.lead.findMany({
         where,
         orderBy,
         take: limitNum,
         skip
       }),
-      prisma.user.count({ where })
+      prisma.lead.count({ where })
     ]);
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        type: 'user',
+        type: 'lead',
         tenant: tenant || 'all',
-        count: users.length,
+        count: leads.length,
         total,
         page: pageNum,
         totalPages: Math.ceil(total / limitNum),
-        leads: users
+        leads
       })
     };
 

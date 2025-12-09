@@ -480,9 +480,9 @@
     </div>
 
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('projects')">Projects</button>
-      <button class="tab" onclick="switchTab('prospects')">Prospects</button>
-      <button class="tab" onclick="switchTab('leads')">Leads</button>
+      <button class="tab active" onclick="switchTab('projects')">Addresses</button>
+      <button class="tab" onclick="switchTab('prospects')">People</button>
+      <button class="tab" onclick="switchTab('leads')">Inquiries</button>
       <button class="tab" onclick="switchTab('settings')">Settings</button>
     </div>
 
@@ -681,7 +681,7 @@
       // Load settings
       loadSettings();
 
-      // Load projects (default tab)
+      // Load addresses (default tab)
       loadProjects(1);
     });
 
@@ -762,8 +762,8 @@
       if (endUserLeadsData.length === 0) {
         tbody.innerHTML = `
           <tr><td colspan="6" class="empty-state">
-            <div class="empty-state-icon">📭</div>
-            <div>No leads yet</div>
+            <img src="https://y.yarn.co/232004e3-6758-41a1-a8b5-2778bd886e66_text.gif" alt="The leads are weak" style="max-width: 400px; border-radius: 8px; margin-bottom: 16px;">
+            <div style="font-size: 14px; color: #6C757D;">No inquiries yet</div>
           </td></tr>
         `;
         return;
