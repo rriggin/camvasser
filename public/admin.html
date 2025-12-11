@@ -483,8 +483,8 @@
     </div>
 
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('projects')">Addresses</button>
-      <button class="tab" onclick="switchTab('prospects')">Contacts</button>
+      <button class="tab active" onclick="switchTab('prospects')">Contacts</button>
+      <button class="tab" onclick="switchTab('projects')">Addresses</button>
       <button class="tab" onclick="switchTab('leads')">Leads</button>
       <button class="tab" onclick="switchTab('settings')">Settings</button>
     </div>
@@ -521,7 +521,7 @@
     </div>
 
     <!-- Projects Section -->
-    <div class="tab-content active" id="projects-content">
+    <div class="tab-content" id="projects-content">
       <div class="stats" id="projectsStats">
         <!-- Project stats will be populated here -->
       </div>
@@ -555,12 +555,15 @@
     </div>
 
     <!-- Prospects Section -->
-    <div class="tab-content" id="prospects-content">
+    <div class="tab-content active" id="prospects-content">
       <div class="stats" id="prospectsStats">
         <!-- Prospect stats will be populated here -->
       </div>
       <div class="filters">
         <input type="text" id="prospectSearch" placeholder="name:john, status:interested, email:yes" oninput="debounceProspectSearch()" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; flex: 1;">
+        <select id="prospectTagFilter" onchange="loadProspects(1)" style="padding: 6px 10px; border: 1px solid #E5E5E5; border-radius: 6px; font-family: 'Outfit', sans-serif; font-size: 12px;">
+          <option value="">All Tags</option>
+        </select>
         <button id="showAllBtn" style="margin-left: 8px; padding: 6px 12px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; cursor: pointer;">Show all</button>
         <div id="projectFilter" style="display: none; margin-left: 15px; padding: 8px 16px; background: #FFF9E6; border-radius: 8px; color: #856404;">
           <span id="projectFilterText"></span>
@@ -572,7 +575,8 @@
           <thead>
             <tr>
               <th class="sortable" data-sort="name" onclick="sortTable('prospects', 'name')">Name</th>
-              <th class="sortable" data-sort="project" onclick="sortTable('prospects', 'project')">Project</th>
+              <th class="sortable" data-sort="project" onclick="sortTable('prospects', 'project')">Address</th>
+              <th>Tags</th>
               <th>Phone</th>
               <th>Email</th>
               <th>Type</th>
@@ -582,7 +586,7 @@
           </thead>
           <tbody id="prospectsList">
             <tr>
-              <td colspan="7" class="loader">Loading...</td>
+              <td colspan="8" class="loader">Loading...</td>
             </tr>
           </tbody>
         </table>
@@ -716,8 +720,8 @@
       // Load settings
       loadSettings();
 
-      // Load addresses (default tab)
-      loadProjects(1);
+      // Load contacts (default tab)
+      loadProspects(1);
 
       // Set up Show all button click handler for Contacts
       document.getElementById('showAllBtn').addEventListener('click', function() {
@@ -1380,13 +1384,23 @@
     let tagsLoaded = false;
 
     function populateTagFilter() {
+      // Populate Addresses tag filter
       const select = document.getElementById('tagFilter');
-      if (!select) return;
+      if (select) {
+        const currentValue = select.value;
+        select.innerHTML = '<option value="">All Tags</option>' +
+          allTags.map(tag => `<option value="${tag.value}">${tag.display_value}</option>`).join('');
+        select.value = currentValue;
+      }
 
-      const currentValue = select.value;
-      select.innerHTML = '<option value="">All Tags</option>' +
-        allTags.map(tag => `<option value="${tag.value}">${tag.display_value}</option>`).join('');
-      select.value = currentValue;
+      // Populate Contacts tag filter
+      const prospectSelect = document.getElementById('prospectTagFilter');
+      if (prospectSelect) {
+        const currentValue = prospectSelect.value;
+        prospectSelect.innerHTML = '<option value="">All Tags</option>' +
+          allTags.map(tag => `<option value="${tag.value}">${tag.display_value}</option>`).join('');
+        prospectSelect.value = currentValue;
+      }
     }
 
     async function loadAllTags() {
@@ -1474,16 +1488,21 @@
     async function loadProspects(page = 1, showAll = false) {
       showAllProspects = showAll;
       const searchQuery = document.getElementById('prospectSearch')?.value?.trim() || '';
+      const tagFilter = document.getElementById('prospectTagFilter')?.value || '';
       const limit = showAll ? 1000 : PAGE_SIZE; // Use large limit when showing all
-      console.log('loadProspects called, page:', page, 'search:', searchQuery, 'showAll:', showAll);
+      console.log('loadProspects called, page:', page, 'search:', searchQuery, 'tag:', tagFilter, 'showAll:', showAll);
       const { column, direction } = sortState.prospects;
       let url = `/.netlify/functions/get-prospects?limit=${limit}&page=${page}&sortBy=${column}&sortDir=${direction}`;
       if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+      if (tagFilter) url += `&tag=${encodeURIComponent(tagFilter)}`;
       console.log('Fetching URL:', url);
 
       if (currentProjectFilter) {
         url += `&projectId=${currentProjectFilter.id}`;
       }
+
+      // Load tags for dropdown if not already loaded
+      if (!tagsLoaded) loadAllTags();
 
       try {
         const response = await fetch(url, {
@@ -1724,7 +1743,7 @@
 
       if (prospectsData.length === 0) {
         tbody.innerHTML = `
-          <tr><td colspan="7" class="empty-state">
+          <tr><td colspan="8" class="empty-state">
             <div class="empty-state-icon">📭</div>
             <div>No prospects found</div>
           </td></tr>
@@ -1787,6 +1806,11 @@
           projectHtml = `<span style="color: #999;">${prospect.lookupAddress}</span>`;
         }
 
+        // Address tags
+        const tagsHtml = prospect.project?.tags?.length > 0
+          ? prospect.project.tags.map(tag => renderTagBadge(tag)).join('')
+          : '<span style="color: #999;">-</span>';
+
         return `
           <tr>
             <td>
@@ -1795,6 +1819,7 @@
               ${prospect.dateOfBirth ? `<br><span style="color: #999; font-size: 12px;">DOB: ${prospect.dateOfBirth}</span>` : ''}
             </td>
             <td style="max-width: 200px;">${projectHtml}</td>
+            <td style="max-width: 200px;">${tagsHtml}</td>
             <td>${phoneDisplay}</td>
             <td style="max-width: 200px; word-break: break-all; font-size: 13px;">${emailDisplay}</td>
             <td>${typeBadges || '-'}</td>
@@ -1899,6 +1924,23 @@
 
       container.innerHTML = html;
     }
+
+    // Command+K to focus search box on current tab
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+
+        // Find the active tab's search input
+        const activeTab = document.querySelector('.tab-content.active');
+        if (activeTab) {
+          const searchInput = activeTab.querySelector('input[type="text"]');
+          if (searchInput) {
+            searchInput.focus();
+            searchInput.select();
+          }
+        }
+      }
+    });
   </script>
 </body>
 </html>

@@ -36,7 +36,7 @@ export async function handler(event) {
   }
 
   try {
-    const { limit, page, projectId, sortBy, sortDir, search } = event.queryStringParameters || {};
+    const { limit, page, projectId, sortBy, sortDir, search, tag } = event.queryStringParameters || {};
     const limitNum = limit ? parseInt(limit) : 25;
     const pageNum = page ? parseInt(page) : 1;
     const skip = (pageNum - 1) * limitNum;
@@ -53,12 +53,46 @@ export async function handler(event) {
       where.projectId = projectId;
     }
 
+    // Filter by project tag (prospects whose project has this tag)
+    if (tag) {
+      // Find projects with matching tag using raw SQL
+      const tagPattern = `%"value": "${tag}"%`;
+      const projectIds = await prisma.$queryRaw`
+        SELECT id FROM "Project"
+        WHERE tags::text ILIKE ${tagPattern}
+      `;
+      const ids = projectIds.map(p => p.id);
+      if (ids.length === 0) {
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            count: 0,
+            total: 0,
+            page: pageNum,
+            totalPages: 0,
+            homeowners: 0,
+            prospects: []
+          })
+        };
+      }
+      where.projectId = { in: ids };
+    }
+
     // Handle search with field:value syntax
     if (search) {
-      const searchLower = search.toLowerCase().trim();
+      // Strip common filler words for more natural searches
+      let cleanedSearch = search
+        .replace(/^(show\s+me\s+)?(all\s+)?(the\s+)?(contacts?|people|prospects?)\s+(with|where|who|that\s+have)\s+/i, '')
+        .replace(/^(find\s+)?(all\s+)?(the\s+)?/i, '')
+        .replace(/^(get\s+)?(all\s+)?(the\s+)?/i, '')
+        .replace(/^(list\s+)?(all\s+)?(the\s+)?/i, '')
+        .trim();
+
+      const searchLower = cleanedSearch.toLowerCase().trim();
 
       // Check for field:value or field=value syntax
-      const colonMatch = search.match(/^(\w+)[:=](.+)$/i);
+      const colonMatch = cleanedSearch.match(/^(\w+)[:=](.+)$/i);
 
       if (colonMatch) {
         const [, field, value] = colonMatch;
@@ -95,13 +129,78 @@ export async function handler(event) {
           }
         } else if (fieldLower === 'resident') {
           where.isCurrentResident = ['yes', 'true', '1'].includes(valueLower);
+        } else if (fieldLower === 'tag' || fieldLower === 'tags') {
+          // tags:yes = has any tag, tags:no = no tags, tags:value = specific tag
+          if (['yes', 'true', '1', 'has', 'any'].includes(valueLower)) {
+            // Has any tag - find projects with non-empty tags array
+            const projectIds = await prisma.$queryRaw`
+              SELECT id FROM "Project"
+              WHERE tags IS NOT NULL
+              AND tags::text != '[]'
+              AND tags::text != 'null'
+            `;
+            const ids = projectIds.map(p => p.id);
+            if (ids.length > 0) {
+              where.projectId = { in: ids };
+            } else {
+              where.projectId = { in: [] }; // No matches
+            }
+          } else if (['no', 'false', '0', 'none'].includes(valueLower)) {
+            // No tags
+            const projectIds = await prisma.$queryRaw`
+              SELECT id FROM "Project"
+              WHERE tags IS NULL
+              OR tags::text = '[]'
+              OR tags::text = 'null'
+            `;
+            const ids = projectIds.map(p => p.id);
+            if (ids.length > 0) {
+              where.projectId = { in: ids };
+            } else {
+              where.projectId = { in: [] };
+            }
+          } else {
+            // Specific tag value
+            const tagPattern = `%"value": "${value.trim()}"%`;
+            const projectIds = await prisma.$queryRaw`
+              SELECT id FROM "Project"
+              WHERE tags::text ILIKE ${tagPattern}
+            `;
+            const ids = projectIds.map(p => p.id);
+            if (ids.length > 0) {
+              where.projectId = { in: ids };
+            } else {
+              where.projectId = { in: [] };
+            }
+          }
         }
       } else {
-        // Simple text search across name and status
-        where.OR = [
-          { name: { contains: search, mode: 'insensitive' } },
-          { status: { contains: search, mode: 'insensitive' } }
-        ];
+        // Check for natural language tag queries
+        if (['has tags', 'with tags', 'have tags', 'tagged'].includes(searchLower)) {
+          const projectIds = await prisma.$queryRaw`
+            SELECT id FROM "Project"
+            WHERE tags IS NOT NULL
+            AND tags::text != '[]'
+            AND tags::text != 'null'
+          `;
+          const ids = projectIds.map(p => p.id);
+          where.projectId = ids.length > 0 ? { in: ids } : { in: [] };
+        } else if (['no tags', 'without tags', 'untagged', 'not tagged'].includes(searchLower)) {
+          const projectIds = await prisma.$queryRaw`
+            SELECT id FROM "Project"
+            WHERE tags IS NULL
+            OR tags::text = '[]'
+            OR tags::text = 'null'
+          `;
+          const ids = projectIds.map(p => p.id);
+          where.projectId = ids.length > 0 ? { in: ids } : { in: [] };
+        } else {
+          // Simple text search across name and status
+          where.OR = [
+            { name: { contains: cleanedSearch, mode: 'insensitive' } },
+            { status: { contains: cleanedSearch, mode: 'insensitive' } }
+          ];
+        }
       }
     }
 
@@ -126,7 +225,8 @@ export async function handler(event) {
             address: true,
             city: true,
             state: true,
-            publicUrl: true
+            publicUrl: true,
+            tags: true
           }
         }
       }
