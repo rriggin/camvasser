@@ -636,14 +636,16 @@
     let prospectSearchTimeout = null;
     window.debounceProspectSearch = function() {
       clearTimeout(prospectSearchTimeout);
-      const searchValue = document.getElementById('prospectSearch')?.value?.trim().toLowerCase();
-      // "all" or "show all" triggers show all
-      if (searchValue === 'all' || searchValue === 'show all') {
-        document.getElementById('prospectSearch').value = '';
-        prospectSearchTimeout = setTimeout(() => loadProspects(1, true), 100);
-      } else {
-        prospectSearchTimeout = setTimeout(() => loadProspects(1), 300);
-      }
+      prospectSearchTimeout = setTimeout(() => {
+        const searchValue = document.getElementById('prospectSearch')?.value?.trim().toLowerCase();
+        // "all" or "show all" triggers show all
+        if (searchValue === 'all' || searchValue === 'show all') {
+          document.getElementById('prospectSearch').value = '';
+          loadProspects(1, true);
+        } else {
+          loadProspects(1);
+        }
+      }, 300);
     };
 
     window.clearProspectSearch = function() {
