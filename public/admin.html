@@ -561,7 +561,7 @@
       </div>
       <div class="filters">
         <input type="text" id="prospectSearch" placeholder="name:john, status:interested, email:yes" oninput="debounceProspectSearch()" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; flex: 1;">
-        <select id="prospectTagFilter" onchange="loadProspects(1)" style="padding: 6px 10px; border: 1px solid #E5E5E5; border-radius: 6px; font-family: 'Outfit', sans-serif; font-size: 12px;">
+        <select id="prospectTagFilter" onchange="loadProspects(1, this.value !== '')" style="padding: 6px 10px; border: 1px solid #E5E5E5; border-radius: 6px; font-family: 'Outfit', sans-serif; font-size: 12px;">
           <option value="">All Tags</option>
         </select>
         <span id="prospectCount" style="margin-left: 8px; padding: 6px 12px; font-size: 12px; font-family: 'Outfit', sans-serif; color: #6C757D;"></span>

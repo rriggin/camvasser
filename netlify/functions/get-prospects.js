@@ -208,9 +208,9 @@ export async function handler(event) {
     const validSortFields = ['name', 'createdAt', 'isHomeowner', 'companyName', 'status'];
     const sortField = validSortFields.includes(sortBy) ? sortBy : 'createdAt';
     const sortDirection = sortDir === 'asc' ? 'asc' : 'desc';
-    // For status, put nulls at the end regardless of sort direction
+    // For status, put nulls first (uncalled contacts at top)
     const orderBy = sortField === 'status'
-      ? { [sortField]: { sort: sortDirection, nulls: 'last' } }
+      ? { [sortField]: { sort: sortDirection, nulls: 'first' } }
       : { [sortField]: sortDirection };
 
     const prospects = await prisma.prospect.findMany({
