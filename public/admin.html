@@ -564,7 +564,7 @@
         <select id="prospectTagFilter" onchange="loadProspects(1)" style="padding: 6px 10px; border: 1px solid #E5E5E5; border-radius: 6px; font-family: 'Outfit', sans-serif; font-size: 12px;">
           <option value="">All Tags</option>
         </select>
-        <button id="showAllBtn" style="margin-left: 8px; padding: 6px 12px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; font-family: 'Outfit', sans-serif; cursor: pointer;">Show all</button>
+        <span id="prospectCount" style="margin-left: 8px; padding: 6px 12px; font-size: 12px; font-family: 'Outfit', sans-serif; color: #6C757D;"></span>
         <div id="projectFilter" style="display: none; margin-left: 15px; padding: 8px 16px; background: #FFF9E6; border-radius: 8px; color: #856404;">
           <span id="projectFilterText"></span>
           <button onclick="clearProjectFilter()" style="margin-left: 10px; background: none; border: none; cursor: pointer; font-weight: bold; color: #856404;">&times;</button>
@@ -636,7 +636,14 @@
     let prospectSearchTimeout = null;
     window.debounceProspectSearch = function() {
       clearTimeout(prospectSearchTimeout);
-      prospectSearchTimeout = setTimeout(() => loadProspects(1), 300);
+      const searchValue = document.getElementById('prospectSearch')?.value?.trim().toLowerCase();
+      // "all" or "show all" triggers show all
+      if (searchValue === 'all' || searchValue === 'show all') {
+        document.getElementById('prospectSearch').value = '';
+        prospectSearchTimeout = setTimeout(() => loadProspects(1, true), 100);
+      } else {
+        prospectSearchTimeout = setTimeout(() => loadProspects(1), 300);
+      }
     };
 
     window.clearProspectSearch = function() {
@@ -723,14 +730,6 @@
       // Load contacts (default tab)
       loadProspects(1);
 
-      // Set up Show all button click handler for Contacts
-      document.getElementById('showAllBtn').addEventListener('click', function() {
-        document.getElementById('prospectSearch').value = '';
-        currentProjectFilter = null;
-        const projectFilterEl = document.getElementById('projectFilter');
-        if (projectFilterEl) projectFilterEl.style.display = 'none';
-        loadProspects(1, true); // true = show all on one page
-      });
 
       // Set up Show all button click handler for Addresses
       document.getElementById('showAllProjectsBtn').addEventListener('click', function() {
@@ -1530,6 +1529,14 @@
         renderProspects();
         renderPagination('prospects', prospectsPagination, loadProspects);
         updateProspectsStats();
+
+        // Update count display
+        const countEl = document.getElementById('prospectCount');
+        if (countEl) {
+          const showing = prospectsData.length;
+          const total = data.total;
+          countEl.textContent = showing === total ? `${total} contacts` : `${showing} of ${total} contacts`;
+        }
 
       } catch (error) {
         console.error('Error loading prospects:', error);
