@@ -564,6 +564,23 @@
         <select id="prospectTagFilter" onchange="loadProspects(1, this.value !== '')" style="padding: 6px 10px; border: 1px solid #E5E5E5; border-radius: 6px; font-family: 'Outfit', sans-serif; font-size: 12px;">
           <option value="">All Tags</option>
         </select>
+        <select id="prospectStatusFilter" onchange="loadProspects(1)" style="padding: 6px 10px; border: 1px solid #E5E5E5; border-radius: 6px; font-family: 'Outfit', sans-serif; font-size: 12px;">
+          <option value="">All Statuses</option>
+          <option value="no_status">No Status</option>
+          <option value="left_voicemail">Left voicemail</option>
+          <option value="no_answer">No answer</option>
+          <option value="callback">Callback</option>
+          <option value="appointment_set">Appointment set</option>
+          <option value="wants_quote_phone">Wants quote over phone</option>
+          <option value="not_interested">Not interested</option>
+          <option value="wrong_number">Wrong number</option>
+          <option value="bad_number">Bad number</option>
+          <option value="hung_up">Hung up</option>
+          <option value="no_need">No need</option>
+          <option value="roof_replaced">Roof replaced</option>
+          <option value="follow_up_email_sent">Follow-up email sent</option>
+          <option value="follow_up_sms_sent">Follow-up SMS sent</option>
+        </select>
         <span id="prospectCount" style="margin-left: 8px; padding: 6px 12px; font-size: 12px; font-family: 'Outfit', sans-serif; color: #6C757D;"></span>
         <div id="projectFilter" style="display: none; margin-left: 15px; padding: 8px 16px; background: #FFF9E6; border-radius: 8px; color: #856404;">
           <span id="projectFilterText"></span>
@@ -581,12 +598,13 @@
               <th>Email</th>
               <th>Type</th>
               <th class="sortable" data-sort="status" onclick="sortTable('prospects', 'status')">Status</th>
+              <th class="sortable" data-sort="updatedAt" onclick="sortTable('prospects', 'updatedAt')">Updated</th>
               <th class="sortable" data-sort="createdAt" onclick="sortTable('prospects', 'createdAt')">Created</th>
             </tr>
           </thead>
           <tbody id="prospectsList">
             <tr>
-              <td colspan="8" class="loader">Loading...</td>
+              <td colspan="9" class="loader">Loading...</td>
             </tr>
           </tbody>
         </table>
@@ -1490,12 +1508,14 @@
       showAllProspects = showAll;
       const searchQuery = document.getElementById('prospectSearch')?.value?.trim() || '';
       const tagFilter = document.getElementById('prospectTagFilter')?.value || '';
+      const statusFilter = document.getElementById('prospectStatusFilter')?.value || '';
       const limit = showAll ? 1000 : PAGE_SIZE; // Use large limit when showing all
-      console.log('loadProspects called, page:', page, 'search:', searchQuery, 'tag:', tagFilter, 'showAll:', showAll);
+      console.log('loadProspects called, page:', page, 'search:', searchQuery, 'tag:', tagFilter, 'status:', statusFilter, 'showAll:', showAll);
       const { column, direction } = sortState.prospects;
       let url = `/.netlify/functions/get-prospects?limit=${limit}&page=${page}&sortBy=${column}&sortDir=${direction}`;
       if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
       if (tagFilter) url += `&tag=${encodeURIComponent(tagFilter)}`;
+      if (statusFilter) url += `&statusFilter=${encodeURIComponent(statusFilter)}`;
       console.log('Fetching URL:', url);
 
       if (currentProjectFilter) {
@@ -1752,9 +1772,9 @@
 
       if (prospectsData.length === 0) {
         tbody.innerHTML = `
-          <tr><td colspan="8" class="empty-state">
+          <tr><td colspan="9" class="empty-state">
             <div class="empty-state-icon">📭</div>
-            <div>No prospects found</div>
+            <div>No contacts found</div>
           </td></tr>
         `;
         return;
@@ -1833,6 +1853,7 @@
             <td style="max-width: 200px; word-break: break-all; font-size: 13px;">${emailDisplay}</td>
             <td>${typeBadges || '-'}</td>
             <td>${statusDropdown}</td>
+            <td style="white-space: nowrap; font-size: 13px; color: #6c757d;">${prospect.updatedAt ? formatDate(prospect.updatedAt).split(',')[0] : '-'}</td>
             <td style="white-space: nowrap; font-size: 13px; color: #6c757d;">${prospect.createdAt ? formatDate(prospect.createdAt).split(',')[0] : '-'}</td>
           </tr>
         `;

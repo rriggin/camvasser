@@ -36,7 +36,7 @@ export async function handler(event) {
   }
 
   try {
-    const { limit, page, projectId, sortBy, sortDir, search, tag } = event.queryStringParameters || {};
+    const { limit, page, projectId, sortBy, sortDir, search, tag, statusFilter } = event.queryStringParameters || {};
     const limitNum = limit ? parseInt(limit) : 25;
     const pageNum = page ? parseInt(page) : 1;
     const skip = (pageNum - 1) * limitNum;
@@ -51,6 +51,18 @@ export async function handler(event) {
 
     if (projectId) {
       where.projectId = projectId;
+    }
+
+    // Filter by status dropdown
+    if (statusFilter) {
+      if (statusFilter === 'no_status') {
+        where.OR = [
+          { status: null },
+          { status: '' }
+        ];
+      } else {
+        where.status = statusFilter;
+      }
     }
 
     // Filter by project tag (prospects whose project has this tag)
@@ -205,7 +217,7 @@ export async function handler(event) {
     }
 
     // Build sort order
-    const validSortFields = ['name', 'createdAt', 'isHomeowner', 'companyName', 'status'];
+    const validSortFields = ['name', 'createdAt', 'updatedAt', 'isHomeowner', 'companyName', 'status'];
     const sortField = validSortFields.includes(sortBy) ? sortBy : 'createdAt';
     const sortDirection = sortDir === 'asc' ? 'asc' : 'desc';
     // For status, put nulls first (uncalled contacts at top)
