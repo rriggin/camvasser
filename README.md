@@ -1,7 +1,5 @@
 # Camvasser
 
--added cade to project. 
-
 Turn your CompanyCam projects into lead generation machines. A multi-tenant SaaS platform that captures leads before showing project photos.
 
 ## Features
@@ -9,10 +7,10 @@ Turn your CompanyCam projects into lead generation machines. A multi-tenant SaaS
 - **Multi-tenant support** - Host multiple branded instances from one deployment
 - Clean, branded landing pages with custom logos and colors
 - Address search → CompanyCam project lookup
+- Lead capture flows (quizzes, qualification forms)
 - Direct links to project photos
-- Call-to-action for projects not found
-- Serverless Netlify functions
-- Simple YAML configuration (no database required)
+- Prospect management with Whitepages enrichment
+- Serverless Netlify functions with PostgreSQL (Prisma)
 
 ## Setup
 
@@ -23,7 +21,7 @@ Turn your CompanyCam projects into lead generation machines. A multi-tenant SaaS
 
 2. **Configure tenants:**
 
-   Edit `tenants.yml` and add your tenant configuration:
+   Edit `public/tenants.yml` and add your tenant configuration:
 
    ```yaml
    tenants:
@@ -39,18 +37,20 @@ Turn your CompanyCam projects into lead generation machines. A multi-tenant SaaS
          logoBackground: "#1a1a1a"
        companycam_api_token_env: "YOURCOMPANY_COMPANYCAM_TOKEN"
        page_title: "View Your Project Photos - Your Company"
-       page_subtitle: "Enter your address to view photos"
        heading: "View Your Photos"
        subheading: "Enter your address to view photos from your project."
-       og_image: "https://yourwebsite.com/og-image.png"
    ```
 
 3. **Set up environment variables:**
 
-   Create a `.env` file with the CompanyCam API tokens for each tenant:
+   Create a `.env` file:
 
    ```bash
-   # Add a token for each tenant using the env var name from tenants.yml
+   # Database
+   DATABASE_URL=postgresql://...
+   DIRECT_URL=postgresql://...
+
+   # CompanyCam tokens (one per tenant)
    YOURCOMPANY_COMPANYCAM_TOKEN=your_api_token_here
    BUDROOFING_COMPANYCAM_TOKEN=another_api_token_here
    ```
@@ -60,71 +60,62 @@ Turn your CompanyCam projects into lead generation machines. A multi-tenant SaaS
    npm run dev
    ```
 
-   Access tenant pages at: `http://localhost:8888/.netlify/functions/page?tenant=yourcompany`
+   Access tenant pages at: `http://localhost:8888/yourcompany`
 
 5. **Deploy to Netlify:**
    ```bash
    npm run deploy
    ```
 
-## Adding New Tenants
+## URL Structure
 
-To add a new tenant:
+All tenant pages use clean URLs via the dynamic router:
 
-1. Add their configuration to `tenants.yml`
-2. Add their CompanyCam API token to `.env` (locally) or Netlify environment variables (production)
-3. Share their unique URL: `https://your-site.netlify.app/.netlify/functions/page?tenant=slug`
-
-No code changes or redeployment needed!
-
-## How It Works
-
-1. Customer visits tenant-specific URL with `?tenant=slug` parameter
-2. Dynamic HTML is generated with tenant branding from `tenants.yml`
-3. Customer enters their address
-4. Search function uses tenant-specific CompanyCam API token
-5. If found: Shows project details + link to photos
-6. If not found: Shows phone number to call
+- `/:tenant` - Tenant index page
+- `/:tenant/photos` - Photo search page
+- `/:tenant/instant-roof-quote` - Quote request flow
+- `/:tenant/roof-claim-denial` - Insurance claim flow
+- `/:tenant/dirty-roof-costs` - Roof cleaning flow
+- `/:tenant/roof-spray-vs-sealant-options` - Treatment options flow
 
 ## Project Structure
 
 ```
 camvasser/
 ├── public/
-│   ├── index.html          # Legacy single-tenant page
-│   └── logos/              # Optional local logo storage
+│   ├── tenants.yml         # Multi-tenant configuration
+│   ├── admin.html          # Admin dashboard
+│   ├── index.html          # Landing page
+│   └── logos/              # Tenant logo storage
 ├── netlify/
 │   └── functions/
-│       ├── page.js         # Dynamic multi-tenant page generator
-│       └── search.js       # CompanyCam search function
-├── tenants.yml             # Multi-tenant configuration
+│       ├── tenant-router.js    # Dynamic URL router
+│       ├── tenant-index.js     # Tenant landing page
+│       ├── page.js             # Photo search page
+│       ├── flow-*.js           # Lead capture flows
+│       ├── get-*.js            # API endpoints (leads, projects, etc.)
+│       ├── save-*.js           # Data persistence endpoints
+│       └── lib/                # Shared utilities
+├── prisma/
+│   └── schema.prisma       # Database schema
+├── scripts/                # Admin utilities
+├── tests/                  # Test files
+├── docs/                   # Documentation
 ├── netlify.toml            # Netlify configuration
-├── .env                    # Local environment variables
 └── package.json
 ```
 
-## Configuration Reference
+## Adding New Tenants
 
-### Tenant Configuration (`tenants.yml`)
+1. Add configuration to `public/tenants.yml`
+2. Add CompanyCam API token to environment variables
+3. Add redirect rules to `netlify.toml` (copy existing tenant pattern)
+4. Share their URL: `https://your-site.netlify.app/tenant-slug`
 
-- `name` - Business name displayed in the page
-- `slug` - URL-friendly identifier (used in `?tenant=slug`)
-- `logo` - Logo URL (can be external URL or local path like `/logos/logo.png`)
-- `phone` - Contact phone number for "not found" results
-- `colors.primary` - Main brand color (buttons, accents)
-- `colors.primaryHover` - Hover state for buttons
-- `colors.background` - Page background color
-- `colors.logoBackground` - Logo section background
-- `companycam_api_token_env` - Name of environment variable containing API token
-- `page_title` - Browser tab title
-- `page_subtitle` - Meta description for SEO
-- `heading` - Main heading on page
-- `subheading` - Subtitle text
-- `og_image` - Open Graph image for social media previews
+## Database Models
 
-## Future Enhancements
-
-- Admin panel for self-service tenant setup
-- Custom domain support per tenant
-- Analytics and usage tracking
-- Photo gallery view
+- **Lead** - Inbound inquiries from landing pages and flows
+- **BusinessUser** - Contractors using the platform
+- **Project** - CompanyCam project data (synced)
+- **Prospect** - People discovered via Whitepages lookup
+- **ProjectLabel** - Tags/statuses from CompanyCam

@@ -6,66 +6,27 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# KC Roof Restoration flows (more specific paths first)
+# Dynamic tenant routing - handles all /:tenant and /:tenant/:page URLs
 [[redirects]]
-  from = "/kcroofrestoration/roof-claim-denial"
-  to = "/.netlify/functions/kcroofrestoration-roof-claim-denial"
+  from = "/budroofing/*"
+  to = "/.netlify/functions/tenant-router/budroofing/:splat"
   status = 200
   force = true
 
-[[redirects]]
-  from = "/kcroofrestoration/roof-spray-vs-sealant-options"
-  to = "/.netlify/functions/kcroofrestoration-roof-spray-options"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/kcroofrestoration/dirty-roof-costs"
-  to = "/.netlify/functions/kcroofrestoration-dirty-roof-costs"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/kcroofrestoration/photos"
-  to = "/.netlify/functions/kcroofrestoration-photos"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/kcroofrestoration/instant-roof-quote"
-  to = "/.netlify/functions/kcroofrestoration-instant-roof-quote"
-  status = 200
-  force = true
-
-# KC Roof index page (after specific routes)
-[[redirects]]
-  from = "/kcroofrestoration"
-  to = "/.netlify/functions/kcroofrestoration"
-  status = 200
-  force = true
-
-# Bud Roofing flows (more specific paths first)
-[[redirects]]
-  from = "/budroofing/roof-claim-denial"
-  to = "/.netlify/functions/budroofing-roof-claim-denial"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/budroofing/photos"
-  to = "/.netlify/functions/budroofing-photos"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/budroofing/instant-roof-quote"
-  to = "/.netlify/functions/budroofing-instant-roof-quote"
-  status = 200
-  force = true
-
-# Bud Roofing index page (after specific routes)
 [[redirects]]
   from = "/budroofing"
-  to = "/.netlify/functions/budroofing"
+  to = "/.netlify/functions/tenant-router/budroofing"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/kcroofrestoration/*"
+  to = "/.netlify/functions/tenant-router/kcroofrestoration/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/kcroofrestoration"
+  to = "/.netlify/functions/tenant-router/kcroofrestoration"
   status = 200
   force = true

@@ -1,0 +1,63 @@
+import { handler as tenantIndexHandler } from './tenant-index.js';
+import { handler as pageHandler } from './page.js';
+import { handler as flowRoofClaimDenialHandler } from './flow-roof-claim-denial.js';
+import { handler as flowDirtyRoofCostsHandler } from './flow-dirty-roof-costs.js';
+import { handler as flowRoofSprayOptionsHandler } from './flow-roof-spray-options.js';
+
+// Route mapping: page slug -> handler
+const pageHandlers = {
+  'photos': pageHandler,
+  'instant-roof-quote': pageHandler,
+  'roof-claim-denial': flowRoofClaimDenialHandler,
+  'dirty-roof-costs': flowDirtyRoofCostsHandler,
+  'roof-spray-vs-sealant-options': flowRoofSprayOptionsHandler,
+};
+
+/**
+ * Dynamic tenant router - replaces individual tenant wrapper functions.
+ *
+ * URL patterns:
+ *   /:tenant           -> tenant index page
+ *   /:tenant/:page     -> specific page (photos, flows, etc.)
+ *
+ * Examples:
+ *   /budroofing                    -> tenant index
+ *   /budroofing/photos             -> photo search page
+ *   /kcroofrestoration/dirty-roof-costs -> dirty roof costs flow
+ */
+export async function handler(event, context) {
+  const path = event.path || event.rawUrl || '';
+
+  // Parse path: /tenant or /tenant/page
+  const segments = path.split('/').filter(Boolean);
+
+  if (segments.length === 0) {
+    return {
+      statusCode: 404,
+      body: 'Not found - no tenant specified',
+    };
+  }
+
+  const tenant = segments[0];
+  const page = segments[1] || null;
+
+  // Set tenant in query params for downstream handlers
+  event.queryStringParameters = event.queryStringParameters || {};
+  event.queryStringParameters.tenant = tenant;
+
+  // Route to appropriate handler
+  if (!page) {
+    // Tenant index page
+    return tenantIndexHandler(event, context);
+  }
+
+  const targetHandler = pageHandlers[page];
+  if (targetHandler) {
+    return targetHandler(event, context);
+  }
+
+  return {
+    statusCode: 404,
+    body: `Not found - unknown page: ${page}`,
+  };
+}
